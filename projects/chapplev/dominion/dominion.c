@@ -838,15 +838,7 @@ int cardEffect(int card, int choice1, int choice2, int choice3, struct gameState
       return 0;
 
     case great_hall:
-      //+1 Card
-      drawCard(currentPlayer, state);
-
-      //+1 Actions
-      state->numActions++;
-
-      //discard card from hand
-      discardCard(handPos, currentPlayer, state, 0);
-      return 0;
+      playGreatHall(state, handPos);
 
     case minion:
       //+1 action
@@ -1040,20 +1032,7 @@ int cardEffect(int card, int choice1, int choice2, int choice3, struct gameState
       return 0;
 
     case embargo:
-      //+2 Coins
-      state->coins = state->coins + 2;
-
-      //see if selected pile is in play
-      if ( state->supplyCount[choice1] == -1 ) {
-    	  return -1;
-    	}
-
-      //add embargo token to selected supply pile
-      state->embargoTokens[choice1]++;
-
-      //trash card
-      discardCard(handPos, currentPlayer, state, 1);
-      return 0;
+      playEmbargo(state, handPos, choice1);
 
     case outpost:
       //set outpost flag
@@ -1224,7 +1203,6 @@ int updateCoins(int player, struct gameState *state, int bonus)
   return 0;
 }
 
-
 int playAdventurer(struct gameState *state) {
   int currentPlayer = whoseTurn(state);
   int nextPlayer = currentPlayer + 1;
@@ -1265,7 +1243,6 @@ int playAdventurer(struct gameState *state) {
   }
   return 0;
 }
-
 
 int playSmithy(struct gameState *state, int handPos) {
   int currentPlayer = whoseTurn(state);
@@ -1324,4 +1301,46 @@ int playCouncilRoom(struct gameState *state, int handPos) {
 
   return 0;
 }
+
+int playEmbargo(struct gameState *state, int handPos, int choice1) {
+  int currentPlayer = whoseTurn(state);
+  int nextPlayer = currentPlayer + 1;
+
+  int tributeRevealedCards[2] = {-1, -1};
+  int temphand[MAX_HAND];// moved above the if statement
+  int drawntreasure=0;
+  int cardDrawn;
+  int z = 0;// this is the counter for the temp hand
+  if (nextPlayer > (state->numPlayers - 1)){
+    nextPlayer = 0;
+  }
+
+  //+2 Coins
+  state->coins = state->coins + 2;
+
+  //see if selected pile is in play
+  if ( state->supplyCount[choice1] == -1 ) {
+    return -1;
+  }
+
+  //add embargo token to selected supply pile
+  state->embargoTokens[choice1]++;
+
+  //trash card
+  discardCard(handPos, currentPlayer, state, 1);
+  return 0;
+}
+
+int playGreatHall(struct gameState *state, int handPos) {
+  //+1 Card
+  drawCard(currentPlayer, state);
+
+  //+1 Actions
+  state->numActions++;
+
+  //discard card from hand
+  discardCard(handPos, currentPlayer, state, 0);
+  return 0;
+}
+
 //end of dominion.c
