@@ -527,7 +527,7 @@ int drawCard(int player, struct gameState *state)
   int deckCounter;
   if (state->deckCount[player] <= 0){//Deck is empty
 
-    //Step 1 Shuffle the discard pile back into a deck
+    //Step 1 Shuffjle the discard pile back into a deck
     int i;
     //Move discard to deck
     for (i = 0; i < state->discardCount[player];i++){
@@ -1223,11 +1223,17 @@ int playAdventurer(struct gameState *state) {
     }
 
     drawCard(currentPlayer, state);
+    // BUG #1 Adding second call to drawCard
+    drawCard(currentPlayer, state);
+    // BUG #1 Adding second call to drawCard
 
     //top card of hand is most recently drawn card.
     cardDrawn = state->hand[currentPlayer][state->handCount[currentPlayer]-1];
 
-    if (cardDrawn == copper || cardDrawn == silver || cardDrawn == gold)
+    // BUG #2 Mistaking gold for copper; not counting gold as a treasurecard
+    if (cardDrawn == copper || cardDrawn == silver || cardDrawn == copper)
+    // BUG #2 Mistaking gold for copper; not counting gold as a treasurecard
+    //if (cardDrawn == copper || cardDrawn == silver || cardDrawn == gold)
       drawntreasure++;
     else{
       temphand[z]=cardDrawn;
@@ -1245,8 +1251,15 @@ int playAdventurer(struct gameState *state) {
 }
 
 int playSmithy(struct gameState *state, int handPos) {
+  int i;
   int currentPlayer = whoseTurn(state);
-  int nextPlayer = currentPlayer + 1;
+  // BUG #1 The next player is incorrectly calculated with subtraction instead of addition, which will eventually cause an out of bounds error with arrays.
+
+  int nextPlayer = currentPlayer - 1;
+  // int nextPlayer = currentPlayer + 1;
+
+  // BUG #1 The next player is incorrectly calculated with subtraction instead of addition, which will eventually cause an out of bounds error with arrays.
+
 
   int tributeRevealedCards[2] = {-1, -1};
   int temphand[MAX_HAND];// moved above the if statement
@@ -1258,7 +1271,10 @@ int playSmithy(struct gameState *state, int handPos) {
   }
 
   //+3 Cards
-  for (i = 0; i < 3; i++) {
+  // BUG #2 Off by 1 error when drawing cards.
+  for (i = 0; i <= 3; i++) {
+  // for (i = 0; i < 3; i++) {
+  // BUG #2
     drawCard(currentPlayer, state);
   }
 
@@ -1268,6 +1284,7 @@ int playSmithy(struct gameState *state, int handPos) {
 }
 
 int playCouncilRoom(struct gameState *state, int handPos) {
+  int i;
   int currentPlayer = whoseTurn(state);
   int nextPlayer = currentPlayer + 1;
 
@@ -1289,12 +1306,14 @@ int playCouncilRoom(struct gameState *state, int handPos) {
   //+1 Buy
   state->numBuys++;
 
+  // BUG #1 Removes the code for each other player drawing a card
   //Each other player draws a card
-  for (i = 0; i < state->numPlayers; i++) {
-  	if ( i != currentPlayer ) {
-  		drawCard(i, state);
-  	}
-  }
+  // for (i = 0; i < state->numPlayers; i++) {
+  // 	if ( i != currentPlayer ) {
+  // 		drawCard(i, state);
+  // 	}
+  // }
+  // BUG #1 Removes the code for each other player drawing a card
 
   //put played card in played card pile
   discardCard(handPos, currentPlayer, state, 0);
@@ -1319,7 +1338,11 @@ int playEmbargo(struct gameState *state, int handPos, int choice1) {
   state->coins = state->coins + 2;
 
   //see if selected pile is in play
-  if ( state->supplyCount[choice1] == -1 ) {
+  // BUG #1 If statement uses an assignment (=) instead of the equality (==).
+  if ( state->supplyCount[choice1] = -1 ) {
+  // if ( state->supplyCount[choice1] == -1 ) {
+  // BUG #1
+
     return -1;
   }
 
@@ -1327,11 +1350,27 @@ int playEmbargo(struct gameState *state, int handPos, int choice1) {
   state->embargoTokens[choice1]++;
 
   //trash card
-  discardCard(handPos, currentPlayer, state, 1);
+  // BUG #2 incorrectly set the trash flag
+  discardCard(handPos, currentPlayer, state, 0);
+  // discardCard(handPos, currentPlayer, state, 1);
+  // BUG #2
+
   return 0;
 }
 
 int playGreatHall(struct gameState *state, int handPos) {
+  int currentPlayer = whoseTurn(state);
+  int nextPlayer = currentPlayer + 1;
+
+  int tributeRevealedCards[2] = {-1, -1};
+  int temphand[MAX_HAND];// moved above the if statement
+  int drawntreasure=0;
+  int cardDrawn;
+  int z = 0;// this is the counter for the temp hand
+  if (nextPlayer > (state->numPlayers - 1)){
+    nextPlayer = 0;
+  }
+
   //+1 Card
   drawCard(currentPlayer, state);
 
