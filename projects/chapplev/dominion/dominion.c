@@ -34,8 +34,7 @@ int* kingdomCards(int k1, int k2, int k3, int k4, int k5, int k6, int k7,
   return k;
 }
 
-int initializeGame(int numPlayers, int kingdomCards[10], int randomSeed,
-		   struct gameState *state) {
+int initializeGame(int numPlayers, int kingdomCards[10], int randomSeed, struct gameState *state) {
 
   int i;
   int j;
@@ -103,33 +102,29 @@ int initializeGame(int numPlayers, int kingdomCards[10], int randomSeed,
   state->supplyCount[gold] = 30;
 
   //set number of Kingdom cards
-  for (i = adventurer; i <= treasure_map; i++)       	//loop all cards
-    {
-      for (j = 0; j < 10; j++)           		//loop chosen cards
-	{
-	  if (kingdomCards[j] == i)
-	    {
-	      //check if card is a 'Victory' Kingdom card
-	      if (kingdomCards[j] == great_hall || kingdomCards[j] == gardens)
-		{
-		  if (numPlayers == 2){
-		    state->supplyCount[i] = 8;
-		  }
-		  else{ state->supplyCount[i] = 12; }
-		}
-	      else
-		{
-		  state->supplyCount[i] = 10;
-		}
-	      break;
-	    }
-	  else    //card is not in the set choosen for the game
-	    {
-	      state->supplyCount[i] = -1;
-	    }
-	}
+  for (i = adventurer; i <= treasure_map; i++)  {     	//loop all cards
 
-    }
+    for (j = 0; j < 10; j++) {           		//loop chosen cards
+  	  if (kingdomCards[j] == i) {
+	      //check if card is a 'Victory' Kingdom card
+	      if (kingdomCards[j] == great_hall || kingdomCards[j] == gardens) {
+  		    if (numPlayers == 2){
+  		      state->supplyCount[i] = 8;
+  		    }
+  		    else{
+            state->supplyCount[i] = 12;
+          }
+  		  }
+  	    else {
+  		    state->supplyCount[i] = 10;
+  		  }
+  	    break;
+  	  }
+  	  else {    //card is not in the set choosen for the game
+  	      state->supplyCount[i] = -1;
+  	  }
+  	}
+  }
 
   ////////////////////////
   //supply intilization complete
@@ -228,8 +223,7 @@ int shuffle(int player, struct gameState *state) {
   return 0;
 }
 
-int playCard(int handPos, int choice1, int choice2, int choice3, struct gameState *state)
-{
+int playCard(int handPos, int choice1, int choice2, int choice3, struct gameState *state) {
   int card;
   int coin_bonus = 0; 		//tracks coins gain from actions
 
@@ -522,8 +516,7 @@ int getWinners(int players[MAX_PLAYERS], struct gameState *state) {
   return 0;
 }
 
-int drawCard(int player, struct gameState *state)
-{	int count;
+int drawCard(int player, struct gameState *state) {	int count;
   int deckCounter;
   if (state->deckCount[player] <= 0){//Deck is empty
 
@@ -580,8 +573,7 @@ int drawCard(int player, struct gameState *state)
   return 0;
 }
 
-int getCost(int cardNumber)
-{
+int getCost(int cardNumber) {
   switch( cardNumber )
     {
     case curse:
@@ -639,12 +631,10 @@ int getCost(int cardNumber)
     case treasure_map:
       return 4;
     }
-
   return -1;
 }
 
-int cardEffect(int card, int choice1, int choice2, int choice3, struct gameState *state, int handPos, int *bonus)
-{
+int cardEffect(int card, int choice1, int choice2, int choice3, struct gameState *state, int handPos, int *bonus) {
   int i;
   int j;
   int k;
@@ -655,9 +645,14 @@ int cardEffect(int card, int choice1, int choice2, int choice3, struct gameState
 
   int tributeRevealedCards[2] = {-1, -1};
   int temphand[MAX_HAND];// moved above the if statement
-  int drawntreasure=0;
-  int cardDrawn;
-  int z = 0;// this is the counter for the temp hand
+
+  // UNUSED VARIABLES
+  // int drawntreasure=0;
+  // int cardDrawn;
+  // int z = 0;// this is the counter for the temp hand
+  // UNUSED VARIABLES
+
+
   if (nextPlayer > (state->numPlayers - 1)){
     nextPlayer = 0;
   }
@@ -1098,8 +1093,7 @@ int cardEffect(int card, int choice1, int choice2, int choice3, struct gameState
     return -1;
 }
 
-int discardCard(int handPos, int currentPlayer, struct gameState *state, int trashFlag)
-{
+int discardCard(int handPos, int currentPlayer, struct gameState *state, int trashFlag) {
 
   //if card is not trashed, added to Played pile
   if (trashFlag < 1)
@@ -1136,8 +1130,7 @@ int discardCard(int handPos, int currentPlayer, struct gameState *state, int tra
   return 0;
 }
 
-int gainCard(int supplyPos, struct gameState *state, int toFlag, int player)
-{
+int gainCard(int supplyPos, struct gameState *state, int toFlag, int player) {
   //Note: supplyPos is enum of choosen card
 
   //check if supply pile is empty (0) or card is not used in game (-1)
@@ -1173,8 +1166,7 @@ int gainCard(int supplyPos, struct gameState *state, int toFlag, int player)
   return 0;
 }
 
-int updateCoins(int player, struct gameState *state, int bonus)
-{
+int updateCoins(int player, struct gameState *state, int bonus) {
   int i;
 
   //reset coin count
@@ -1207,7 +1199,7 @@ int playAdventurer(struct gameState *state) {
   int currentPlayer = whoseTurn(state);
   int nextPlayer = currentPlayer + 1;
 
-  int tributeRevealedCards[2] = {-1, -1};
+
   int temphand[MAX_HAND];// moved above the if statement
   int drawntreasure=0;
   int cardDrawn;
@@ -1253,6 +1245,7 @@ int playAdventurer(struct gameState *state) {
 int playSmithy(struct gameState *state, int handPos) {
   int i;
   int currentPlayer = whoseTurn(state);
+
   // BUG #1 The next player is incorrectly calculated with subtraction instead of addition, which will eventually cause an out of bounds error with arrays.
 
   int nextPlayer = currentPlayer - 1;
@@ -1260,12 +1253,6 @@ int playSmithy(struct gameState *state, int handPos) {
 
   // BUG #1 The next player is incorrectly calculated with subtraction instead of addition, which will eventually cause an out of bounds error with arrays.
 
-
-  int tributeRevealedCards[2] = {-1, -1};
-  int temphand[MAX_HAND];// moved above the if statement
-  int drawntreasure=0;
-  int cardDrawn;
-  int z = 0;// this is the counter for the temp hand
   if (nextPlayer > (state->numPlayers - 1)){
     nextPlayer = 0;
   }
@@ -1288,11 +1275,6 @@ int playCouncilRoom(struct gameState *state, int handPos) {
   int currentPlayer = whoseTurn(state);
   int nextPlayer = currentPlayer + 1;
 
-  int tributeRevealedCards[2] = {-1, -1};
-  int temphand[MAX_HAND];// moved above the if statement
-  int drawntreasure=0;
-  int cardDrawn;
-  int z = 0;// this is the counter for the temp hand
   if (nextPlayer > (state->numPlayers - 1)){
     nextPlayer = 0;
   }
@@ -1325,11 +1307,6 @@ int playEmbargo(struct gameState *state, int handPos, int choice1) {
   int currentPlayer = whoseTurn(state);
   int nextPlayer = currentPlayer + 1;
 
-  int tributeRevealedCards[2] = {-1, -1};
-  int temphand[MAX_HAND];// moved above the if statement
-  int drawntreasure=0;
-  int cardDrawn;
-  int z = 0;// this is the counter for the temp hand
   if (nextPlayer > (state->numPlayers - 1)){
     nextPlayer = 0;
   }
@@ -1362,11 +1339,7 @@ int playGreatHall(struct gameState *state, int handPos) {
   int currentPlayer = whoseTurn(state);
   int nextPlayer = currentPlayer + 1;
 
-  int tributeRevealedCards[2] = {-1, -1};
-  int temphand[MAX_HAND];// moved above the if statement
-  int drawntreasure=0;
-  int cardDrawn;
-  int z = 0;// this is the counter for the temp hand
+
   if (nextPlayer > (state->numPlayers - 1)){
     nextPlayer = 0;
   }
