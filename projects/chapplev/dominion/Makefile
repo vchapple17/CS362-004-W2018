@@ -6,7 +6,7 @@ rngs.o: rngs.h rngs.c
 myAssert.o: myAssert.h myAssert.c
 	gcc -c myAssert.c -g $(CFLAGS)
 
-dominion.o: dominion.h dominion.c rngs.o 
+dominion.o: dominion.h dominion.c rngs.o
 	gcc -c dominion.c -g  $(CFLAGS)
 
 playdom: dominion.o playdom.c
@@ -45,21 +45,45 @@ unittest1: unittest1.c dominion.o rngs.o myAssert.o
 unittest2: unittest2.c dominion.o rngs.o myAssert.o
 	gcc  -o unittest2 -g  unittest2.c dominion.o rngs.o myAssert.o $(CFLAGS)
 
-run1: unittest1 
+unittest3: unittest3.c dominion.o rngs.o myAssert.o
+	gcc  -o unittest3 -g  unittest3.c dominion.o rngs.o myAssert.o $(CFLAGS)
+
+unittest4: unittest4.c dominion.o rngs.o myAssert.o
+	gcc  -o unittest4 -g  unittest4.c dominion.o rngs.o myAssert.o $(CFLAGS)
+
+
+run1: unittest1
 	./unittest1
 	gcov dominion.c
 	gcov -abcfu dominion.c
 
-run2: unittest2 
+run2: unittest2
 	./unittest2
 	gcov dominion.c
 	gcov -abcfu dominion.c
+
+run3: unittest3
+	./unittest3
+	gcov dominion.c
+	gcov -abcfu dominion.c
+
+run4: unittest4
+	./unittest4
+	gcov dominion.c
+	gcov -abcfu dominion.c
+
 
 unittestresults.out: unittest1 unittest2
 	./unittest1 &> unittestresult.out
 	gcov dominion.c >> unittestresult.out
 	cat dominion.c.gcov >> unittestresult.out
 	./unittest2 &> unittestresult.out
+	gcov dominion.c >> unittestresult.out
+	cat dominion.c.gcov >> unittestresult.out
+	./unittest3 &> unittestresult.out
+	gcov dominion.c >> unittestresult.out
+	cat dominion.c.gcov >> unittestresult.out
+	./unittest4 &> unittestresult.out
 	gcov dominion.c >> unittestresult.out
 	cat dominion.c.gcov >> unittestresult.out
 
