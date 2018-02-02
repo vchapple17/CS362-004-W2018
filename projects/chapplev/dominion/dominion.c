@@ -267,16 +267,20 @@ int buyCard(int supplyPos, struct gameState *state) {
     if (DEBUG)
       printf("You do not have any buys left\n");
     return -1;
-  } else if (supplyCount(supplyPos, state) <1){
+  }
+  else if (supplyCount(supplyPos, state) <1){
     if (DEBUG)
       printf("There are not any of that type of card left\n");
     return -1;
-  } else if (state->coins < getCost(supplyPos)){
+  }
+  else if (state->coins < getCost(supplyPos)){
     if (DEBUG)
       printf("You do not have enough money to buy that. You have %d coins.\n", state->coins);
     return -1;
-  } else {
-    state->phase=1;
+  }
+  else {
+    state->phase=1;   //Prob shouldn't be here???/
+
     //state->supplyCount[supplyPos]--;
     gainCard(supplyPos, state, 0, who); //card goes in discard, this might be wrong.. (2 means goes into hand, 0 goes into discard)
 
@@ -376,10 +380,9 @@ int isGameOver(struct gameState *state) {
   int j;
 
   //if stack of Province cards is empty, the game ends
-  if (state->supplyCount[province] == 0)
-    {
-      return 1;
-    }
+  if (state->supplyCount[province] == 0) {
+    return 1;
+  }
 
   //if three supply pile are at 0, the game ends
   j = 0;
