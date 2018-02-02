@@ -2,3 +2,21 @@
 *.gcda
 
 *.gcno
+
+*.plist
+
+projects/chapplev/dominion/unittest4
+
+projects/chapplev/dominion/unittest3
+
+projects/chapplev/dominion/unittest2
+
+projects/chapplev/dominion/unittest1
+
+projects/chapplev/dominion/unittest1.dSYM/Contents/Resources/DWARF/unittest1
+
+projects/chapplev/dominion/unittest2.dSYM/Contents/Resources/DWARF/unittest2
+
+projects/chapplev/dominion/unittest3.dSYM/Contents/Resources/DWARF/unittest3
+
+projects/chapplev/dominion/unittest4.dSYM/Contents/Resources/DWARF/unittest4
