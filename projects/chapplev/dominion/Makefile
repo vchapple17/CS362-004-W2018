@@ -3,7 +3,10 @@ CFLAGS = -Wall -fpic -coverage -lm
 rngs.o: rngs.h rngs.c
 	gcc -c rngs.c -g  $(CFLAGS)
 
-dominion.o: dominion.h dominion.c rngs.o
+myAssert.o: myAssert.h myAssert.c
+	gcc -c myAssert.c -g $(CFLAGS)
+
+dominion.o: dominion.h dominion.c rngs.o 
 	gcc -c dominion.c -g  $(CFLAGS)
 
 playdom: dominion.o playdom.c
@@ -36,19 +39,29 @@ player: player.c interface.o
 
 
 # My Unit tests
-unittest1: unittest1.c dominion.o rngs.o
-	gcc  -o unittest1 -g  unittest1.c dominion.o rngs.o $(CFLAGS)
+unittest1: unittest1.c dominion.o rngs.o myAssert.o
+	gcc  -o unittest1 -g  unittest1.c dominion.o rngs.o myAssert.o $(CFLAGS)
 
-run1: unittest1
+unittest2: unittest2.c dominion.o rngs.o myAssert.o
+	gcc  -o unittest2 -g  unittest2.c dominion.o rngs.o myAssert.o $(CFLAGS)
+
+run1: unittest1 
 	./unittest1
 	gcov dominion.c
 	gcov -abcfu dominion.c
 
-unittestresults.out: unittest1
+run2: unittest2 
+	./unittest2
+	gcov dominion.c
+	gcov -abcfu dominion.c
+
+unittestresults.out: unittest1 unittest2
 	./unittest1 &> unittestresult.out
 	gcov dominion.c >> unittestresult.out
 	cat dominion.c.gcov >> unittestresult.out
-	gcov -abcfu dominion.c
+	./unittest2 &> unittestresult.out
+	gcov dominion.c >> unittestresult.out
+	cat dominion.c.gcov >> unittestresult.out
 
 # set noexpandtab
 all: playdom player testDrawCard testBuyCard badTestDrawCard

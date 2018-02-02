@@ -4,6 +4,7 @@
 #include <assert.h>
 #include "dominion.h"
 #include "dominion_helpers.h"
+#include "myAssert.h"
 
 /* Unit Test #1 Dominion */
 
@@ -15,15 +16,6 @@ int isGameOver(struct gameState *state)
 
 */
 
-int myAssert(int conditional, char * name, char * T, char * F) {
-  if (conditional) {
-    printf("%s\t%s\n", T, name);
-  }
-  else {
-    printf("%s\t%s\n", F, name);
-  }
-  return 0;
-}
 
 int main(int argc, char *argv[]) {
   // Kingdom Cards
