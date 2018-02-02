@@ -53,16 +53,13 @@ int initializeGame(int numPlayers, int kingdomCards[10], int randomSeed, struct 
   state->numPlayers = numPlayers;
 
   //check selected kingdom cards are different
-  for (i = 0; i < 10; i++)
-    {
-      for (j = 0; j < 10; j++)
-        {
-	  if (j != i && kingdomCards[j] == kingdomCards[i])
-	    {
-	      return -1;
-	    }
-        }
+  for (i = 0; i < 10; i++) {
+    for (j = 0; j < 10; j++) {
+      if (j != i && kingdomCards[j] == kingdomCards[i]) {
+        return -1;
+      }
     }
+  }
 
 
   //initialize supply
@@ -103,7 +100,6 @@ int initializeGame(int numPlayers, int kingdomCards[10], int randomSeed, struct 
 
   //set number of Kingdom cards
   for (i = adventurer; i <= treasure_map; i++)  {     	//loop all cards
-
     for (j = 0; j < 10; j++) {           		//loop chosen cards
   	  if (kingdomCards[j] == i) {
 	      //check if card is a 'Victory' Kingdom card
@@ -130,29 +126,24 @@ int initializeGame(int numPlayers, int kingdomCards[10], int randomSeed, struct 
   //supply intilization complete
 
   //set player decks
-  for (i = 0; i < numPlayers; i++)
-    {
-      state->deckCount[i] = 0;
-      for (j = 0; j < 3; j++)
-	{
-	  state->deck[i][j] = estate;
-	  state->deckCount[i]++;
-	}
-      for (j = 3; j < 10; j++)
-	{
-	  state->deck[i][j] = copper;
-	  state->deckCount[i]++;
-	}
+  for (i = 0; i < numPlayers; i++) {
+    state->deckCount[i] = 0;
+    for (j = 0; j < 3; j++) {
+      state->deck[i][j] = estate;
+      state->deckCount[i]++;
     }
+    for (j = 3; j < 10; j++) {
+      state->deck[i][j] = copper;
+      state->deckCount[i]++;
+    }
+  }
 
   //shuffle player decks
-  for (i = 0; i < numPlayers; i++)
-    {
-      if ( shuffle(i, state) < 0 )
-	{
-	  return -1;
-	}
+  for (i = 0; i < numPlayers; i++) {
+    if ( shuffle(i, state) < 0 ) {
+	     return -1;
     }
+  }
 
   //draw player hands
   for (i = 0; i < numPlayers; i++)
