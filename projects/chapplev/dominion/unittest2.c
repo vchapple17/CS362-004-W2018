@@ -7,7 +7,7 @@
 #include "myAssert.h"
 
 
-/* Unit Test #1 Dominion */
+/* Unit Test #2 Dominion */
 
 /*
 
@@ -157,7 +157,7 @@ int main(int argc, char *argv[]) {
   // Sub Tests
   myAssert( (result == expected) , "Return Value", "PASS", "FAIL");
   myAssert( (memcmp(&gamePre, &gamePost, sizeof(struct gameState)) != 0), "Different Game State (Shuffled)", "PASS", "FAIL");
-  myAssert(gamePre.deckCount[0] == gamePre.deckCount[0], "Same Number of Cards", "PASS", "FAIL");
+  myAssert(gamePre.deckCount[0] == gamePost.deckCount[0], "Same Number of Cards", "PASS", "FAIL");
     // Check sorted decks are the same
   qsort ((void*)(gamePre.deck[0]), gamePre.deckCount[0], sizeof(int), compare);
   qsort ((void*)(gamePost.deck[0]), gamePost.deckCount[0], sizeof(int), compare);
@@ -192,7 +192,7 @@ int main(int argc, char *argv[]) {
   // Sub Tests
   myAssert( (result == expected) , "Return Value", "PASS", "FAIL");
   myAssert( (memcmp(&gamePre, &gamePost, sizeof(struct gameState)) != 0), "Different Game State (Shuffled)", "PASS", "FAIL");
-  myAssert(gamePre.deckCount[0] == gamePre.deckCount[0], "Same Number of Cards", "PASS", "FAIL");
+  myAssert(gamePre.deckCount[0] == gamePost.deckCount[0], "Same Number of Cards", "PASS", "FAIL");
     // Check sorted decks are the same
   qsort ((void*)(gamePre.deck[0]), gamePre.deckCount[0], sizeof(int), compare);
   qsort ((void*)(gamePost.deck[0]), gamePost.deckCount[0], sizeof(int), compare);
@@ -227,7 +227,7 @@ int main(int argc, char *argv[]) {
   // Sub Tests
   myAssert( (result == expected) , "Return Value", "PASS", "FAIL");
   myAssert( (memcmp(&gamePre, &gamePost, sizeof(struct gameState)) != 0), "Different Game State (Shuffled)", "PASS", "FAIL");
-  myAssert(gamePre.deckCount[0] == gamePre.deckCount[0], "Same Number of Cards", "PASS", "FAIL");
+  myAssert(gamePre.deckCount[0] == gamePost.deckCount[0], "Same Number of Cards", "PASS", "FAIL");
     // Check sorted decks are the same
   qsort ((void*)(gamePre.deck[0]), gamePre.deckCount[0], sizeof(int), compare);
   qsort ((void*)(gamePost.deck[0]), gamePost.deckCount[0], sizeof(int), compare);
@@ -262,7 +262,7 @@ int main(int argc, char *argv[]) {
   // Sub Tests
   myAssert( (result == expected) , "Return Value", "PASS", "FAIL");
   myAssert( (memcmp(&gamePre, &gamePost, sizeof(struct gameState)) != 0), "Different Game State (Shuffled)", "PASS", "FAIL");
-  myAssert(gamePre.deckCount[0] == gamePre.deckCount[0], "Same Number of Cards", "PASS", "FAIL");
+  myAssert(gamePre.deckCount[0] == gamePost.deckCount[0], "Same Number of Cards", "PASS", "FAIL");
     // Check sorted decks are the same
   qsort ((void*)(gamePre.deck[0]), gamePre.deckCount[0], sizeof(int), compare);
   qsort ((void*)(gamePost.deck[0]), gamePost.deckCount[0], sizeof(int), compare);
