@@ -42,12 +42,15 @@ unittest1: unittest1.c dominion.o rngs.o
 run1: unittest1
 	./unittest1
 	gcov dominion.c
+	gcov -abcfu dominion.c
 
 unittestresults.out: unittest1
 	./unittest1 &> unittestresult.out
 	gcov dominion.c >> unittestresult.out
 	cat dominion.c.gcov >> unittestresult.out
+	gcov -abcfu dominion.c
 
+# set noexpandtab
 all: playdom player testDrawCard testBuyCard badTestDrawCard
 
 clean:

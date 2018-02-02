@@ -24,36 +24,6 @@ int myAssert(int conditional, char * name, char * T, char * F) {
   }
   return 0;
 }
-// struct gameState {
-//   int numPlayers; //number of players
-//   int supplyCount[treasure_map+1];  //this is the amount of a specific type of card given a specific number.
-//   int embargoTokens[treasure_map+1];
-//   int outpostPlayed;
-//   int outpostTurn;
-//   int whoseTurn;
-//   int phase;
-//   int numActions; /* Starts at 1 each turn */
-//   int coins; /* Use as you see fit! */
-//   int numBuys; /* Starts at 1 each turn */
-//   int hand[MAX_PLAYERS][MAX_HAND];
-//   int handCount[MAX_PLAYERS];
-//   int deck[MAX_PLAYERS][MAX_DECK];
-//   int deckCount[MAX_PLAYERS];
-//   int discard[MAX_PLAYERS][MAX_DECK];
-//   int discardCount[MAX_PLAYERS];
-//   int playedCards[MAX_DECK];
-//   int playedCardCount;
-// };
-
-//
-// int testIsGameOver(struct gameState *gamePre) {
-//
-//
-//   // Call isGameOverFunction
-//
-//
-// }
-
 
 int main(int argc, char *argv[]) {
   // Kingdom Cards
@@ -110,6 +80,7 @@ int main(int argc, char *argv[]) {
   gamePre.supplyCount[nonKingdom[0]] = 0;   // Force 3 supply piles to be zero
   gamePre.supplyCount[nonKingdom[1]] = 0;
   gamePre.supplyCount[nonKingdom[2]] = 0;
+  gamePre.supplyCount[nonKingdom[province]] = 1;
   memcpy(&gamePost, &gamePre, sizeof(struct gameState)); // Set POST (testcase)
   expected = 1;   // Expect that game is over
   result = isGameOver(&gamePost);
@@ -122,6 +93,7 @@ int main(int argc, char *argv[]) {
   printf("\n\n======TEST: %s======\n", test );
   gamePre.supplyCount[nonKingdom[0]] = 0;   // Exactly 2 supply piles are zero
   gamePre.supplyCount[nonKingdom[1]] = 0;
+  gamePre.supplyCount[nonKingdom[province]] = 1;
   memcpy(&gamePost, &gamePre, sizeof(struct gameState)); // Set POST (testcase)
   expected = 0;   // Expect that game is NOT over
   result = isGameOver(&gamePost);
@@ -146,13 +118,30 @@ int main(int argc, char *argv[]) {
   gamePre.supplyCount[nonKingdom[0]] = 0;   // Force 3 supply piles to be zero
   gamePre.supplyCount[nonKingdom[1]] = 0;
   gamePre.supplyCount[nonKingdom[2]] = 0;
-  gamePre.supplyCount[nonKingdom[3]] = 0;
+  gamePre.supplyCount[nonKingdom[province]] = 1;   // Province card is 3rd index
+  gamePre.supplyCount[nonKingdom[4]] = 0;
   memcpy(&gamePost, &gamePre, sizeof(struct gameState)); // Set POST (testcase)
   expected = 1;   // Expect that game is over
   result = isGameOver(&gamePost);
   myAssert( (result == expected) , "Return Value", "PASS", "FAIL");
   myAssert( (memcmp(&gamePre, &gamePost, sizeof(struct gameState)) == 0), "Same Game State", "PASS", "FAIL");
 
+
+  // TEST #7
+  test = "Returns 1 for 5 empty (non-province) supply piles.";
+  memcpy(&gamePre, &game, sizeof(struct gameState));  // Set PRE
+  printf("\n\n======TEST: %s======\n", test );
+  gamePre.supplyCount[nonKingdom[0]] = 0;   // Force 5 supply piles to be zero
+  gamePre.supplyCount[nonKingdom[1]] = 0;
+  gamePre.supplyCount[nonKingdom[2]] = 0;
+  gamePre.supplyCount[nonKingdom[province]] = 1;  // Province card is 3rd index
+  gamePre.supplyCount[nonKingdom[4]] = 0;
+  gamePre.supplyCount[nonKingdom[5]] = 0;
+  memcpy(&gamePost, &gamePre, sizeof(struct gameState)); // Set POST (testcase)
+  expected = 1;   // Expect that game is over
+  result = isGameOver(&gamePost);
+  myAssert( (result == expected) , "Return Value", "PASS", "FAIL");
+  myAssert( (memcmp(&gamePre, &gamePost, sizeof(struct gameState)) == 0), "Same Game State", "PASS", "FAIL");
   printf("\n\n");
 
   return 0;
