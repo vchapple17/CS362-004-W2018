@@ -138,3 +138,57 @@ int main(int argc, char *argv[]) {
 
   return 0;
 }
+
+
+// //check selected kingdom cards are different
+// for (i = 0; i < 10; i++) {
+//   for (j = 0; j < 10; j++) {
+//     if (j != i && k[j] == k[i]) {
+//       return -1;
+//     }
+//   }
+// }
+//
+// // Setup gameStates
+// struct gameState game;
+// struct gameState gamePre;
+// struct gameState gamePost;
+// int result = -1;
+// int expected = -1;
+// int i = 0;
+//
+// //set up random number generator
+// SelectStream(1);
+// PutSeed((long)randomSeed);
+// // initializeGame(2, k, 1, &game);
+//
+// // Set Num Players and counts
+// game.numPlayers = 2;
+//
+// // // Set Card Counts
+// // game->supplyCount[curse] = 10;
+// // game->supplyCount[estate] = 8;
+// // game->supplyCount[duchy] = 8;
+// // game->supplyCount[province] = 8;
+// // game->supplyCount[copper] = 60 - (7 * 2);
+// // game->supplyCount[silver] = 40;
+// // game->supplyCount[gold] = 30;
+// //
+// // // Set Kingdom Card Count
+// // for (i = adventurer; i <= treasure_map; i++)  {     	//loop all cards
+// //   for (j = 0; j < 10; j++) {           		//loop chosen cards
+// // 	  if (kingdomCards[j] == i) {
+// //       //check if card is a 'Victory' Kingdom card
+// //       if (kingdomCards[j] == great_hall || kingdomCards[j] == gardens) {
+// //         game->supplyCount[i] = 8;
+// // 		  }
+// // 	    else {
+// // 		    game->supplyCount[i] = 10;
+// // 		  }
+// // 	    break;
+// // 	  }
+// // 	  else {    //card is not in the set choosen for the game
+// // 	      game->supplyCount[i] = -1;
+// // 	  }
+// // 	}
+// // }
