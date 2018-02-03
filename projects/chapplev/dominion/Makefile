@@ -56,7 +56,13 @@ cardtest1: cardtest1.c dominion.o rngs.o myAssert.o
 	gcc  -o cardtest1 -g  cardtest1.c dominion.o rngs.o myAssert.o $(CFLAGS)
 
 cardtest2: cardtest2.c dominion.o rngs.o myAssert.o
-	gcc  -o cardtest2 -g  cardtest1.c dominion.o rngs.o myAssert.o $(CFLAGS)
+	gcc  -o cardtest2 -g  cardtest2.c dominion.o rngs.o myAssert.o $(CFLAGS)
+
+cardtest3: cardtest3.c dominion.o rngs.o myAssert.o
+	gcc  -o cardtest3 -g  cardtest3.c dominion.o rngs.o myAssert.o $(CFLAGS)
+
+cardtest4: cardtest4.c dominion.o rngs.o myAssert.o
+	gcc  -o cardtest4 -g  cardtest4.c dominion.o rngs.o myAssert.o $(CFLAGS)
 
 
 run1: unittest1
@@ -79,9 +85,23 @@ run4: unittest4
 	gcov dominion.c
 	gcov -abcfu dominion.c
 
-
 run1c: cardtest1 
 	./cardtest1
+	gcov dominion.c
+	gcov -abcfu dominion.c
+
+run2c: cardtest2
+	./cardtest2
+	gcov dominion.c
+	gcov -abcfu dominion.c
+
+run3c: cardtest3
+	./cardtest3
+	gcov dominion.c
+	gcov -abcfu dominion.c
+
+run4c: cardtest4
+	./cardtest4
 	gcov dominion.c
 	gcov -abcfu dominion.c
 
