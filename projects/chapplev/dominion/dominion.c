@@ -1328,12 +1328,6 @@ int playEmbargo(struct gameState *state, int handPos, int choice1) {
 
 int playGreatHall(struct gameState *state, int handPos) {
   int currentPlayer = whoseTurn(state);
-  int nextPlayer = currentPlayer + 1;
-
-
-  if (nextPlayer > (state->numPlayers - 1)){
-    nextPlayer = 0;
-  }
 
   //+1 Card
   drawCard(currentPlayer, state);
