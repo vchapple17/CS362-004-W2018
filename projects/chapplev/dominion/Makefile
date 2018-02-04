@@ -85,7 +85,7 @@ run4: unittest4
 	gcov dominion.c
 	gcov -abcfu dominion.c
 
-run1c: cardtest1 
+run1c: cardtest1
 	./cardtest1
 	gcov dominion.c
 	gcov -abcfu dominion.c
@@ -105,19 +105,40 @@ run4c: cardtest4
 	gcov dominion.c
 	gcov -abcfu dominion.c
 
-unittestresults.out: unittest1 unittest2
-	./unittest1 &> unittestresult.out
+unittestresults: unittest1 unittest2 unittest3 unittest4 cardtest1 cardtest2 cardtest3 cardtest4
+	echo "UNIT TEST RESULTS" > unittestresult.out
+	echo >> unittestresult.out
+	echo "unittest1.c:" >> unittestresult.out
+	./unittest1 >> unittestresult.out
 	gcov dominion.c >> unittestresult.out
-	cat dominion.c.gcov >> unittestresult.out
-	./unittest2 &> unittestresult.out
+	echo >> unittestresult.out
+	echo "unittest2.c:" >> unittestresult.out
+	./unittest2 >> unittestresult.out
 	gcov dominion.c >> unittestresult.out
-	cat dominion.c.gcov >> unittestresult.out
-	./unittest3 &> unittestresult.out
+	echo >> unittestresult.out
+	echo "unittest3.c:" >> unittestresult.out
+	./unittest3 >> unittestresult.out
 	gcov dominion.c >> unittestresult.out
-	cat dominion.c.gcov >> unittestresult.out
-	./unittest4 &> unittestresult.out
+	echo >> unittestresult.out
+	echo "unittest4.c:" >> unittestresult.out
+	./unittest4 >> unittestresult.out
 	gcov dominion.c >> unittestresult.out
-	cat dominion.c.gcov >> unittestresult.out
+	echo >> unittestresult.out
+	echo "cardtest1.c:" >> unittestresult.out
+	./cardtest1 >> unittestresult.out
+	gcov dominion.c >> unittestresult.out
+	echo >> unittestresult.out
+	echo "cardtest2.c:" >> unittestresult.out
+	./cardtest2 >> unittestresult.out
+	echo >> unittestresult.out
+	gcov dominion.c >> unittestresult.out
+	echo "cardtest3.c:" >> unittestresult.out
+	./cardtest3 >> unittestresult.out
+	gcov dominion.c >> unittestresult.out
+	echo >> unittestresult.out
+	echo "cardtest4.c:" >> unittestresult.out
+	./cardtest4 >> unittestresult.out
+	gcov dominion.c >> unittestresult.out
 
 # set noexpandtab
 all: playdom player testDrawCard testBuyCard badTestDrawCard
