@@ -53,10 +53,10 @@ int main(int argc, char *argv[]) {
   // Set Num Players to 1
   game.numPlayers = 1;
   int player = 0; // only player
-
+  char * teststring = "gainCard()";
   // TEST #1
   char * test = "Reject a supply count of 0.";
-  printf("\n======TEST: %s======\n", test );
+  printf("\n======TEST: %s: %s======\n", teststring, test );
   memcpy(&gamePre, &game, sizeof(struct gameState));  // Set PRE
   // INPUT
   int supplyPos = 1;
@@ -71,7 +71,7 @@ int main(int argc, char *argv[]) {
 
   // TEST #2
   test = "Reject a supply count of -1.";
-  printf("\n======TEST: %s======\n", test );
+  printf("\n======TEST: %s: %s======\n", teststring, test );
   memcpy(&gamePre, &game, sizeof(struct gameState));  // Set PRE
   // INPUT
   supplyPos = 1;
@@ -86,7 +86,7 @@ int main(int argc, char *argv[]) {
 
   // TEST #3
   test = "Accept a supply count of 1 and discard.";
-  printf("\n======TEST: %s======\n", test );
+  printf("\n======TEST: %s: %s======\n", teststring, test );
   memcpy(&gamePre, &game, sizeof(struct gameState));  // Set PRE
   // INPUT
   supplyPos = 1;
@@ -125,7 +125,7 @@ int main(int argc, char *argv[]) {
 
   // TEST #4
   test = "Accept a supply count of 1 and deck.";
-  printf("\n======TEST: %s======\n", test );
+  printf("\n======TEST: %s: %s======\n", teststring, test );
   memcpy(&gamePre, &game, sizeof(struct gameState));  // Set PRE
   // INPUT
   supplyPos = 1;
@@ -164,7 +164,7 @@ int main(int argc, char *argv[]) {
 
   // TEST #5
   test = "Accept a supply count of 1 and hand.";
-  printf("\n======TEST: %s======\n", test );
+  printf("\n======TEST: %s: %s======\n", teststring, test );
   memcpy(&gamePre, &game, sizeof(struct gameState));  // Set PRE
   // INPUT
   supplyPos = 1;
@@ -203,7 +203,7 @@ int main(int argc, char *argv[]) {
 
   // TEST #6
   test = "Reject a supply count of 1 and invalid flag.";
-  printf("\n======TEST: %s======\n", test );
+  printf("\n======TEST: %s: %s======\n", teststring, test );
   memcpy(&gamePre, &game, sizeof(struct gameState));  // Set PRE
   // INPUT
   supplyPos = 1;
@@ -216,6 +216,6 @@ int main(int argc, char *argv[]) {
   myAssert( (result == expected) , "Return Value", "PASS", "FAIL");
   myAssert( (memcmp(&gamePre, &gamePost, sizeof(struct gameState)) == 0), "Same Game State", "PASS", "FAIL");
 
-  printf("\n\n");
+  printf("\n");
   return 0;
 }

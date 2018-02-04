@@ -43,10 +43,14 @@ int main(int argc, char *argv[]) {
     memset(game.hand[i], 0, sizeof(int) * MAX_HAND); // From testDrawCard.c
   }
 
+  char * teststring = "isGameOver()";
+
+  printf("\n\nTESTING: %s\n", teststring);
+
   // TEST #1
   char * test = "Returns 1 for empty Province stack.";
   memcpy(&gamePre, &game, sizeof(struct gameState));  // Set PRE
-  printf("\n\n======TEST: %s======\n", test );
+  printf("\n======TEST: %s: %s======\n", teststring, test );
   gamePre.supplyCount[province] = 0;   // Force Province stack to zero
   memcpy(&gamePost, &gamePre, sizeof(struct gameState)); // Set POST (testcase)
   expected = 1;   // Expect that game is over
@@ -57,7 +61,7 @@ int main(int argc, char *argv[]) {
   // TEST #2
   test = "Returns 0 for non-empty Province stack.";
   memcpy(&gamePre, &game, sizeof(struct gameState));  // Set PRE
-  printf("\n\n======TEST: %s======\n", test );
+  printf("\n======TEST: %s: %s======\n", teststring, test );
   gamePre.supplyCount[province] = 1;   // Force Province stack to 1
   memcpy(&gamePost, &gamePre, sizeof(struct gameState)); // Set POST (testcase)
   expected = 0;   // Expect that game is NOT over
@@ -66,9 +70,9 @@ int main(int argc, char *argv[]) {
   myAssert( (memcmp(&gamePre, &gamePost, sizeof(struct gameState)) == 0), "Same Game State", "PASS", "FAIL");
 
   // TEST #3
-  test = "Returns 1 for 3 empty (non-province) supply piles.";
+  test = "Returns 1 for 3 empty (non-province).";
   memcpy(&gamePre, &game, sizeof(struct gameState));  // Set PRE
-  printf("\n\n======TEST: %s======\n", test );
+  printf("\n======TEST: %s: %s======\n", teststring, test );
   gamePre.supplyCount[nonKingdom[0]] = 0;   // Force 3 supply piles to be zero
   gamePre.supplyCount[nonKingdom[1]] = 0;
   gamePre.supplyCount[nonKingdom[2]] = 0;
@@ -80,9 +84,9 @@ int main(int argc, char *argv[]) {
   myAssert( (memcmp(&gamePre, &gamePost, sizeof(struct gameState)) == 0), "Same Game State", "PASS", "FAIL");
 
   // TEST #4
-  test = "Returns 0 for 2 empty (non-province) supply piles.";
+  test = "Returns 0 for 2 empty (non-province).";
   memcpy(&gamePre, &game, sizeof(struct gameState));  // Set PRE
-  printf("\n\n======TEST: %s======\n", test );
+  printf("\n======TEST: %s: %s======\n", teststring, test );
   gamePre.supplyCount[nonKingdom[0]] = 0;   // Exactly 2 supply piles are zero
   gamePre.supplyCount[nonKingdom[1]] = 0;
   gamePre.supplyCount[nonKingdom[province]] = 1;
@@ -93,9 +97,9 @@ int main(int argc, char *argv[]) {
   myAssert( (memcmp(&gamePre, &gamePost, sizeof(struct gameState)) == 0), "Same Game State", "PASS", "FAIL");
 
   // TEST #5
-  test = "Returns 0 for 1 empty (non-province) supply piles.";
+  test = "Returns 0 for 1 empty (non-province).";
   memcpy(&gamePre, &game, sizeof(struct gameState));  // Set PRE
-  printf("\n\n======TEST: %s======\n", test );
+  printf("\n======TEST: %s: %s======\n", teststring, test );
   gamePre.supplyCount[nonKingdom[0]] = 0;   // Exactly 1 supply pile is zero
   memcpy(&gamePost, &gamePre, sizeof(struct gameState)); // Set POST (testcase)
   expected = 0;   // Expect that game is NOT over
@@ -104,9 +108,9 @@ int main(int argc, char *argv[]) {
   myAssert( (memcmp(&gamePre, &gamePost, sizeof(struct gameState)) == 0), "Same Game State", "PASS", "FAIL");
 
   // TEST #6
-  test = "Returns 1 for 4 empty (non-province) supply piles.";
+  test = "Returns 1 for 4 empty (non-province).";
   memcpy(&gamePre, &game, sizeof(struct gameState));  // Set PRE
-  printf("\n\n======TEST: %s======\n", test );
+  printf("\n======TEST: %s: %s======\n", teststring, test );
   gamePre.supplyCount[nonKingdom[0]] = 0;   // Force 3 supply piles to be zero
   gamePre.supplyCount[nonKingdom[1]] = 0;
   gamePre.supplyCount[nonKingdom[2]] = 0;
@@ -120,9 +124,9 @@ int main(int argc, char *argv[]) {
 
 
   // TEST #7
-  test = "Returns 1 for 5 empty (non-province) supply piles.";
+  test = "Returns 1 for 5 empty (non-province).";
   memcpy(&gamePre, &game, sizeof(struct gameState));  // Set PRE
-  printf("\n\n======TEST: %s======\n", test );
+  printf("\n======TEST: %s: %s======\n", teststring, test );
   gamePre.supplyCount[nonKingdom[0]] = 0;   // Force 5 supply piles to be zero
   gamePre.supplyCount[nonKingdom[1]] = 0;
   gamePre.supplyCount[nonKingdom[2]] = 0;
@@ -134,7 +138,7 @@ int main(int argc, char *argv[]) {
   result = isGameOver(&gamePost);
   myAssert( (result == expected) , "Return Value", "PASS", "FAIL");
   myAssert( (memcmp(&gamePre, &gamePost, sizeof(struct gameState)) == 0), "Same Game State", "PASS", "FAIL");
-  printf("\n\n");
+  printf("\n");
 
   return 0;
 }

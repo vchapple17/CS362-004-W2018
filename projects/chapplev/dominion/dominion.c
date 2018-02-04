@@ -658,6 +658,8 @@ int cardEffect(int card, int choice1, int choice2, int choice3, struct gameState
     // Adventerer
     case adventurer:
       playAdventurer(state);
+      //Adding line below to run tests
+      return 0;
 
     case council_room:
       playCouncilRoom(state, handPos);
@@ -1331,10 +1333,8 @@ int playGreatHall(struct gameState *state, int handPos) {
 
   //+1 Card
   drawCard(currentPlayer, state);
-
   //+1 Actions
   state->numActions++;
-
   //discard card from hand
   discardCard(handPos, currentPlayer, state, 0);
   return 0;

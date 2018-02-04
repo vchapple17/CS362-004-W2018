@@ -51,10 +51,10 @@ int main(int argc, char *argv[]) {
 
   // Set Num Players to 1
   game.numPlayers = 1;
-
+  char * teststring = "updateCoins()";
   // TEST #1
   char * test = "Copper 1, Silver 0, Gold 0, Bonus 0";
-  printf("\n======TEST: %s======\n", test );
+  printf("\n======TEST: %s: %s======\n", teststring, test );
   memcpy(&gamePre, &game, sizeof(struct gameState));  // Set PRE
   // INPUT
   int numC = 1;
@@ -98,7 +98,7 @@ int main(int argc, char *argv[]) {
 
   // TEST #2
   test = "Copper 0, Silver 1, Gold 0, Bonus 0";
-  printf("\n======TEST: %s======\n", test );
+  printf("\n======TEST: %s: %s======\n", teststring, test );
   memcpy(&gamePre, &game, sizeof(struct gameState));  // Set PRE
   // INPUT
   numC = 0;
@@ -142,7 +142,7 @@ int main(int argc, char *argv[]) {
 
   // TEST #3
   test = "Copper 0, Silver 0, Gold 1, Bonus 0";
-  printf("\n======TEST: %s======\n", test );
+  printf("\n======TEST: %s: %s======\n", teststring, test );
   memcpy(&gamePre, &game, sizeof(struct gameState));  // Set PRE
   // INPUT
   numC = 0;
@@ -186,7 +186,7 @@ int main(int argc, char *argv[]) {
 
   // TEST #4
   test = "Copper 0, Silver 0, Gold 0, Bonus 0";
-  printf("\n======TEST: %s======\n", test );
+  printf("\n======TEST: %s: %s======\n", teststring, test );
   memcpy(&gamePre, &game, sizeof(struct gameState));  // Set PRE
   // INPUT
   numC = 0;
@@ -230,7 +230,7 @@ int main(int argc, char *argv[]) {
 
   // TEST #5
   test = "Copper 1, Silver 12, Gold 35, Bonus 0";
-  printf("\n======TEST: %s======\n", test );
+  printf("\n======TEST: %s: %s======\n", teststring, test );
   memcpy(&gamePre, &game, sizeof(struct gameState));  // Set PRE
   // INPUT
   numC = 1;
@@ -274,7 +274,7 @@ int main(int argc, char *argv[]) {
 
   // TEST #6
   test = "Copper 0, Silver 0, Gold 0, Bonus 150";
-  printf("\n======TEST: %s======\n", test );
+  printf("\n======TEST: %s: %s======\n", teststring, test );
   memcpy(&gamePre, &game, sizeof(struct gameState));  // Set PRE
   // INPUT
   numC = 0;
@@ -316,6 +316,6 @@ int main(int argc, char *argv[]) {
   gamePost.coins = gamePre.coins;
   myAssert( (memcmp(&gamePre, &gamePost, sizeof(struct gameState)) == 0), "Rest of Game State is same", "PASS", "FAIL");
 
-  printf("\n\n");
+  printf("\n");
   return 0;
 }

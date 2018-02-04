@@ -54,10 +54,10 @@ int main(int argc, char *argv[]) {
 
   // Set Num Players to 1
   game.numPlayers = 1;
-
+  char * teststring = "shuffle()";
   // TEST #1
   char * test = "Invalid Player Deck Count (0)";
-  printf("\n======TEST: %s======\n", test );
+  printf("\n======TEST: %s: %s======\n", teststring, test );
   memcpy(&gamePre, &game, sizeof(struct gameState));  // Set PRE
   gamePre.deckCount[0] = 0;  //set player deck to zero
   memcpy(&gamePost, &gamePre, sizeof(struct gameState)); // Set POST
@@ -70,7 +70,7 @@ int main(int argc, char *argv[]) {
 
   // TEST #2
   test = "Invalid Player Deck Count (-1)";
-  printf("\n======TEST: %s======\n", test );
+  printf("\n======TEST: %s: %s======\n", teststring, test );
   memcpy(&gamePre, &game, sizeof(struct gameState));  // Set PRE
   gamePre.deckCount[0] = -1;  //set player deck to zero
   memcpy(&gamePost, &gamePre, sizeof(struct gameState)); // Set POST
@@ -83,7 +83,7 @@ int main(int argc, char *argv[]) {
 
   // TEST #3
   test = "Invalid Player Deck Count (MAX_DECK+1)";
-  printf("\n======TEST: %s======\n", test );
+  printf("\n======TEST: %s: %s======\n", teststring, test );
   memcpy(&gamePre, &game, sizeof(struct gameState));  // Set PRE
   gamePre.deckCount[0] = MAX_DECK+1;  //set player deck to zero
   memcpy(&gamePost, &gamePre, sizeof(struct gameState)); // Set POST
@@ -95,7 +95,7 @@ int main(int argc, char *argv[]) {
 
   // TEST #4
   test = "Valid Player Deck Count (MAX_DECK)";
-  printf("\n======TEST: %s======\n", test );
+  printf("\n======TEST: %s: %s======\n", teststring, test );
   memcpy(&gamePre, &game, sizeof(struct gameState));  // Set PRE
   gamePre.deckCount[0] = MAX_DECK;  //set player deck to zero
   memcpy(&gamePost, &gamePre, sizeof(struct gameState)); // Set POST
@@ -108,7 +108,7 @@ int main(int argc, char *argv[]) {
 
   // TEST #5
   test = "Valid Player Deck Count (1)";
-  printf("\n======TEST: %s======\n", test );
+  printf("\n======TEST: %s: %s======\n", teststring, test );
   memcpy(&gamePre, &game, sizeof(struct gameState));  // Set PRE
   gamePre.deckCount[0] = 1;  //set player deck to zero
   memcpy(&gamePost, &gamePre, sizeof(struct gameState)); // Set POST
@@ -120,7 +120,7 @@ int main(int argc, char *argv[]) {
 
   // TEST #6
   test = "Valid Player Deck Count (100)";
-  printf("\n======TEST: %s======\n", test );
+  printf("\n======TEST: %s: %s======\n", teststring, test );
   memcpy(&gamePre, &game, sizeof(struct gameState));  // Set PRE
   gamePre.deckCount[0] = 100;  //set player deck to zero
   memcpy(&gamePost, &gamePre, sizeof(struct gameState)); // Set POST
@@ -135,7 +135,7 @@ int main(int argc, char *argv[]) {
 
   // TEST #7
   test = "Valid Player Starting Deck (10)";
-  printf("\n======TEST: %s======\n", test );
+  printf("\n======TEST: %s: %s======\n", teststring, test );
   memcpy(&gamePre, &game, sizeof(struct gameState));  // Set PRE
   // INPUT
   int numCard1 = 3;
@@ -165,7 +165,7 @@ int main(int argc, char *argv[]) {
 
   // TEST #8
   test = "Valid Player Deck (15)";
-  printf("\n======TEST: %s======\n", test );
+  printf("\n======TEST: %s: %s======\n", teststring, test );
   memcpy(&gamePre, &game, sizeof(struct gameState));  // Set PRE
   // INPUT
   numCard1 = 3;
@@ -200,7 +200,7 @@ int main(int argc, char *argv[]) {
 
   // TEST #8
   test = "Valid Player Deck (150)";
-  printf("\n======TEST: %s======\n", test );
+  printf("\n======TEST: %s: %s======\n", teststring, test );
   memcpy(&gamePre, &game, sizeof(struct gameState));  // Set PRE
   // INPUT
   numCard1 = 30;
@@ -235,7 +235,7 @@ int main(int argc, char *argv[]) {
 
   // TEST #8
   test = "Valid Player Deck (500)";
-  printf("\n======TEST: %s======\n", test );
+  printf("\n======TEST: %s: %s======\n", teststring, test );
   memcpy(&gamePre, &game, sizeof(struct gameState));  // Set PRE
   // INPUT
   numCard1 = 450;
@@ -268,6 +268,6 @@ int main(int argc, char *argv[]) {
   qsort ((void*)(gamePost.deck[0]), gamePost.deckCount[0], sizeof(int), compare);
   myAssert( (memcmp(&gamePre, &gamePost, sizeof(struct gameState)) == 0), "Same Cards", "PASS", "FAIL");
 
-  printf("\n\n");
+  printf("\n");
   return 0;
 }
