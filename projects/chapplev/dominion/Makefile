@@ -3,6 +3,9 @@ CFLAGS = -Wall -fpic -coverage -lm
 rngs.o: rngs.h rngs.c
 	gcc -c rngs.c -g  $(CFLAGS)
 
+myAssert.o: myAssert.h myAssert.c
+	gcc -c myAssert.c -g $(CFLAGS)
+
 dominion.o: dominion.h dominion.c rngs.o
 	gcc -c dominion.c -g  $(CFLAGS)
 
@@ -36,19 +39,109 @@ player: player.c interface.o
 
 
 # My Unit tests
-unittest1: unittest1.c dominion.o rngs.o
-	gcc  -o unittest1 -g  unittest1.c dominion.o rngs.o $(CFLAGS)
+unittest1: unittest1.c dominion.o rngs.o myAssert.o
+	gcc  -o unittest1 -g  unittest1.c dominion.o rngs.o myAssert.o $(CFLAGS)
+
+unittest2: unittest2.c dominion.o rngs.o myAssert.o
+	gcc  -o unittest2 -g  unittest2.c dominion.o rngs.o myAssert.o $(CFLAGS)
+
+unittest3: unittest3.c dominion.o rngs.o myAssert.o
+	gcc  -o unittest3 -g  unittest3.c dominion.o rngs.o myAssert.o $(CFLAGS)
+
+unittest4: unittest4.c dominion.o rngs.o myAssert.o
+	gcc  -o unittest4 -g  unittest4.c dominion.o rngs.o myAssert.o $(CFLAGS)
+
+# My Card tests
+cardtest1: cardtest1.c dominion.o rngs.o myAssert.o
+	gcc  -o cardtest1 -g  cardtest1.c dominion.o rngs.o myAssert.o $(CFLAGS)
+
+cardtest2: cardtest2.c dominion.o rngs.o myAssert.o
+	gcc  -o cardtest2 -g  cardtest2.c dominion.o rngs.o myAssert.o $(CFLAGS)
+
+cardtest3: cardtest3.c dominion.o rngs.o myAssert.o
+	gcc  -o cardtest3 -g  cardtest3.c dominion.o rngs.o myAssert.o $(CFLAGS)
+
+cardtest4: cardtest4.c dominion.o rngs.o myAssert.o
+	gcc  -o cardtest4 -g  cardtest4.c dominion.o rngs.o myAssert.o $(CFLAGS)
+
 
 run1: unittest1
 	./unittest1
 	gcov dominion.c
+	gcov -abcfu dominion.c
 
-unittestresults.out: unittest1
-	./unittest1 &> unittestresult.out
+run2: unittest2
+	./unittest2
+	gcov dominion.c
+	gcov -abcfu dominion.c
+
+run3: unittest3
+	./unittest3
+	gcov dominion.c
+	gcov -abcfu dominion.c
+
+run4: unittest4
+	./unittest4
+	gcov dominion.c
+	gcov -abcfu dominion.c
+
+run1c: cardtest1
+	./cardtest1
+	gcov dominion.c
+	gcov -abcfu dominion.c
+
+run2c: cardtest2
+	./cardtest2
+	gcov dominion.c
+	gcov -abcfu dominion.c
+
+run3c: cardtest3
+	./cardtest3
+	gcov dominion.c
+	gcov -abcfu dominion.c
+
+run4c: cardtest4
+	./cardtest4
+	gcov dominion.c
+	gcov -abcfu dominion.c
+
+unittestresults: unittest1 unittest2 unittest3 unittest4 cardtest1 cardtest2 cardtest3 cardtest4
+	echo "UNIT TEST RESULTS" > unittestresult.out
+	echo >> unittestresult.out
+	echo "unittest1.c:" >> unittestresult.out
+	./unittest1 >> unittestresult.out
 	gcov dominion.c >> unittestresult.out
-	cat dominion.c.gcov >> unittestresult.out
+	echo >> unittestresult.out
+	echo "unittest2.c:" >> unittestresult.out
+	./unittest2 >> unittestresult.out
+	gcov dominion.c >> unittestresult.out
+	echo >> unittestresult.out
+	echo "unittest3.c:" >> unittestresult.out
+	./unittest3 >> unittestresult.out
+	gcov dominion.c >> unittestresult.out
+	echo >> unittestresult.out
+	echo "unittest4.c:" >> unittestresult.out
+	./unittest4 >> unittestresult.out
+	gcov dominion.c >> unittestresult.out
+	echo >> unittestresult.out
+	echo "cardtest1.c:" >> unittestresult.out
+	./cardtest1 >> unittestresult.out
+	gcov dominion.c >> unittestresult.out
+	echo >> unittestresult.out
+	echo "cardtest2.c:" >> unittestresult.out
+	./cardtest2 >> unittestresult.out
+	echo >> unittestresult.out
+	gcov dominion.c >> unittestresult.out
+	echo "cardtest3.c:" >> unittestresult.out
+	./cardtest3 >> unittestresult.out
+	gcov dominion.c >> unittestresult.out
+	echo >> unittestresult.out
+	echo "cardtest4.c:" >> unittestresult.out
+	./cardtest4 >> unittestresult.out
+	gcov dominion.c >> unittestresult.out
 
+# set noexpandtab
 all: playdom player testDrawCard testBuyCard badTestDrawCard
 
 clean:
-	rm -f *.o playdom.exe playdom player player.exe  *.gcov *.gcda *.gcno *.so *.out testDrawCard testDrawCard.exe
+	rm -f *.o playdom.exe playdom player player.exe  *.gcov *.gcda *.gcno *.so *.out testDrawCard testDrawCard.exe unittest1 unittest2
