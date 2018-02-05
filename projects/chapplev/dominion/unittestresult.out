@@ -423,7 +423,7 @@ PASS	Action count increases by 1.
 ======TEST: Village Card: cardEffect(): Deck shuffled, but not enough cards total.======
 PASS	Return Value
 PASS	Different Game State
-FAIL	Hand Count Same
+FAIL	Hand Count less by 1
 PASS	Deck Count zero
 FAIL	playedCardCount increased by 1
 PASS	Coin bonus same.

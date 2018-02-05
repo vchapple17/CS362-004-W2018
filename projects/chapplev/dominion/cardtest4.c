@@ -157,9 +157,8 @@ int main(int argc, char *argv[]) {
   card = smithy;
   coin_bonus = 0;
   coin_bonus_pre = 0;
-  int cardsDrawn = 1;
   gamePre.deckCount[player] = 0;
-  gamePre.discardCount[player] = cardsDrawn;
+  gamePre.discardCount[player] = 0;
   gamePre.handCount[player] = 10;
   gamePre.playedCardCount = 0;
   for (i = 0; i < gamePre.discardCount[player]; i++ ) {
@@ -172,19 +171,16 @@ int main(int argc, char *argv[]) {
     gamePre.hand[player][i] = i % (treasure_map+1); // Set hand pile
   }
   gamePre.hand[player][handPos] = card; // Set hand pile smithy card
-
   for (i = 0; i < gamePre.playedCardCount; i++ ) {
     gamePre.playedCards[i] = i % (treasure_map+1); // Set discard pile
   }
   memcpy(&gamePost, &gamePre, sizeof(struct gameState)); // Set POST
   expected = 0;    // Accept
-  // result = playSmithy(&gamePost, handPos);
   result = cardEffect(card, -1, -1, -1, &gamePost, handPos, &coin_bonus);
   // Sub Tests
   myAssert( (result == expected) , "Return Value", "PASS", "FAIL");
   myAssert( (memcmp(&gamePre, &gamePost, sizeof(struct gameState)) != 0), "Different Game State", "PASS", "FAIL");
-    // more cards in hand, but played smithy
-  myAssert( (gamePre.handCount[player] == gamePost.handCount[player]) , "Hand Count Same", "PASS", "FAIL");
+  myAssert( (gamePre.handCount[player] -1 == gamePost.handCount[player]) , "Hand Count less by 1", "PASS", "FAIL");
     // 1 fewer card in deck
   myAssert( (gamePre.deckCount[player] == gamePost.deckCount[player]) , "Deck Count zero", "PASS", "FAIL");
   myAssert( (gamePre.playedCardCount + 1 == gamePost.playedCardCount) , "playedCardCount increased by 1", "PASS", "FAIL");
