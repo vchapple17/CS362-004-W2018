@@ -64,6 +64,15 @@ cardtest3: cardtest3.c dominion.o rngs.o myAssert.o
 cardtest4: cardtest4.c dominion.o rngs.o myAssert.o
 	gcc  -o cardtest4 -g  cardtest4.c dominion.o rngs.o myAssert.o $(CFLAGS)
 
+# My Random Card tests
+randomtestcard1: randomtestcard1.c dominion.o rngs.o myAssert.o
+	gcc  -o randomtestcard1 -g  randomtestcard1.c dominion.o rngs.o myAssert.o $(CFLAGS)
+
+randomtestcard2: randomtestcard2.c dominion.o rngs.o myAssert.o
+	gcc  -o randomtestcard2 -g  randomtestcard2.c dominion.o rngs.o myAssert.o $(CFLAGS)
+
+randomtestadventurer: randomtestadventurer.c dominion.o rngs.o myAssert.o
+	gcc  -o randomtestadventurer -g  randomtestadventurer.c dominion.o rngs.o myAssert.o $(CFLAGS)
 
 run1: unittest1
 	./unittest1
@@ -102,6 +111,21 @@ run3c: cardtest3
 
 run4c: cardtest4
 	./cardtest4
+	gcov dominion.c
+	gcov -abcfu dominion.c
+
+run1r: randomtestcard1
+	./randomtestcard1
+	gcov dominion.c
+	gcov -abcfu dominion.c
+
+run2r: randomtestcard2
+	./randomtestcard2
+	gcov dominion.c
+	gcov -abcfu dominion.c
+
+run3r: randomtestadventurer
+	./randomtestadventurer
 	gcov dominion.c
 	gcov -abcfu dominion.c
 
