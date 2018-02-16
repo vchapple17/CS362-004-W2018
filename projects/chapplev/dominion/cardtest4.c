@@ -14,14 +14,6 @@ Test the card:
 
 village
 
-INPUT:
-full deck vs. empty deck
-
-OUTPUT
-* hand count is same, but new card
-* 2 more actions
-* Discard pile increased by 1
-
 */
 
 int main(int argc, char *argv[]) {
@@ -121,7 +113,7 @@ int main(int argc, char *argv[]) {
   for (i = 0; i < gamePre.handCount[player]; i++ ) {
     gamePre.hand[player][i] = i % (treasure_map+1); // Set hand pile
   }
-  gamePre.hand[player][handPos] = card; // Set hand pile smithy card
+  gamePre.hand[player][handPos] = card; // Set hand pile card
 
   for (i = 0; i < gamePre.playedCardCount; i++ ) {
     gamePre.playedCards[i] = i % (treasure_map+1); // Set discard pile
@@ -154,7 +146,7 @@ int main(int argc, char *argv[]) {
   gamePre.numPlayers = 2;
   gamePre.whoseTurn = player;
   handPos = 0;
-  card = smithy;
+  card = village;
   coin_bonus = 0;
   coin_bonus_pre = 0;
   gamePre.deckCount[player] = 0;
@@ -170,7 +162,7 @@ int main(int argc, char *argv[]) {
   for (i = 0; i < gamePre.handCount[player]; i++ ) {
     gamePre.hand[player][i] = i % (treasure_map+1); // Set hand pile
   }
-  gamePre.hand[player][handPos] = card; // Set hand pile smithy card
+  gamePre.hand[player][handPos] = card; // Set hand pile card
   for (i = 0; i < gamePre.playedCardCount; i++ ) {
     gamePre.playedCards[i] = i % (treasure_map+1); // Set discard pile
   }
