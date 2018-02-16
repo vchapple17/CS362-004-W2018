@@ -11,11 +11,11 @@
 #endif
 
 #ifndef ITERATIONS
-#define ITERATIONS 1000000
+#define ITERATIONS 100000
 #endif
 
 #ifndef FAIL_MAX
-#define FAIL_MAX 1000000
+#define FAIL_MAX 100000
 #endif
 
 #ifndef RANDOMTESTHELPER_H
