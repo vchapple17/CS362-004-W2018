@@ -87,6 +87,7 @@ protected void setUp() {
       assertTrue(urlVal.isValid("http://www.google.com/"));
       int statusPerLine = 60;
       int printed = 0;
+      int num = 0;
       if (printIndex)  {
          statusPerLine = 6;
       }
@@ -120,10 +121,12 @@ protected void setUp() {
                printed = 0;
             }
          }
+         num++;
       } while (incrementTestPartsIndex(testPartsIndex, testObjects));
       if (printStatus) {
          System.out.println();
       }
+      System.out.print(num);
    }
 
    public void testValidator202() {
