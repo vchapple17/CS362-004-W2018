@@ -1,196 +1,900 @@
-/*******************************************************************
-* Name: randomtestcard2.c
-* Author: Matt Nutsch
-* Date: 2-11-2018
-* Description:
-* This code randomly tests the function smithy_card.
-*
-********************************************************************/
-
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <assert.h>
+#include <math.h>
 #include "dominion.h"
 #include "dominion_helpers.h"
-#include <string.h>
-#include <stdio.h>
-#include <assert.h>
+#include "myAssert.h"
 #include "rngs.h"
-#include <time.h> // for tracking run time
+#include <time.h>
+#include "randomtesthelper.h"
 
-int main() 
-{
-	int returnValue = NULL; //used to store return value of functions
-	int tempArrayPosition = 0; //used in randomly selecting cards
-	int loopCounter = 0; //used to keep track of test loop iterations
-	int timesToLoop = 400000; //set this to control how many random tests to perform
-	int numberOfErrorsFound = 0;
-	int handPositionCardTesting = 0; //used to track the position in the hand of the card being tested
-	
-	int i; //used as a count
-    int seed = 1000;
-    int numPlayer = 5; //assumes a maximum of 5 players
-    struct gameState G;
-	
-	int p, r, handCount;
-    int bonus;
-	
-	int k[10] = {adventurer, council_room, feast, gardens, mine
-               , remodel, smithy, village, baron, great_hall};
-	
-	int maxHandCount = 5;
+/* Random Test for Village Card*/
+/*
 
-    int coppers[MAX_HAND];
-	
-	int deckCount = 0;
-	int initActions = 0;
-	int maxCardsInHand = 3;
-	int bonusPlaceholder = 0;
-	int currentPlayer = 0;
-	int startingCardCount = 0;
-	
-    for (i = 0; i < MAX_HAND; i++)
-    {
-        coppers[i] = copper;
+Test the card implementation in cardEffect() with village card
+ Draw 1
+ Action +2
+
+INPUT
+No shuffle and can draw 1
+Shuffle and can draw 1
+No cards to draw, no draw
+
+OUTPUT - Check
+hand count is unchanged (draw 1 and discard 1)
+deck count decreases by 1
+discard count increases by 1
+numActions increases by 2
+*/
+
+
+// Case A: Deck is Empty, Requires Shuffling of non-empty discard.
+// Result: Player gains 1 cards from its shuffled deck
+//         Hand changes by 0 (b/c of playing village)
+//         Deck+Discard count decreases by 1
+//         village card goes to played pile
+//         Action Count increases by 2
+int testVillageCaseA(int iterations) {
+  struct gameState preGame;
+  struct gameState postGame;
+  int deckSize;
+  int discardSize ;
+  int handSize;
+  int i;
+  int z; // iteration count
+  int v1, v2;
+  int result = -1;
+  int card = village;
+  int handPos = -1;
+  int p = -1;
+  int coin_bonus = 0;
+  int didFail = 0;    // 0 for pass, 1 for fail
+  int totalPass = 0;
+  int totalFail = 0;
+  int errors[10] = {0, 0, 0, 0, 0, 0, 0, 0, 0};  // index 0 for total errors
+  char * test1_string;
+  char * test2_string;
+  char * test3_string;
+  char * test4_string;
+  char * test5_string;
+  char * test6_string;
+  char * test7_string;
+  char * test8_string;
+  char * test9_string;
+
+  for (z = 0; z < iterations; z++ ) {
+    // SETUP
+    int test=0;
+    i = 0;
+    v1 = 0;
+    v2 = 0;
+    result = -1;
+    card = village;
+    handPos = -1;
+    p = -1;
+    coin_bonus = 0;
+    didFail = 0;    // 0 for pass, 1 for fail
+
+
+    deckSize = 0;
+    do {
+      discardSize = ceil( Random() * MAX_DECK ); // greater than 0
+    } while (( discardSize < 1) || (discardSize > MAX_DECK ));
+    handSize = 10;
+    if (DEBUG_FLAG) printf("\tsetGameState #%d\n", z);
+    setGameState(&preGame, deckSize, discardSize, handSize );
+
+    // Set player
+    p = floor (Random() * preGame.numPlayers);
+    preGame.whoseTurn = p;
+    assert(preGame.discardCount[p] == discardSize);
+    assert(preGame.handCount[p] == handSize);
+    assert(preGame.deckCount[p] == deckSize);
+
+    // Set Action Count to > 0
+    preGame.numActions = 1;
+
+    // Set Played card count
+    // preGame.playedCardCount = 1;
+    // for (i = 0 ; i < preGame.playedCardCount; i++) {
+    //   preGame.playedCards[i] = mine;    // ineffective card in played card
+    // }
+
+    // Set card hand position
+    handPos = floor(Random() * handSize);
+    preGame.hand[p][handPos] = card;
+
+    // Copy Game State for Post
+    memcpy(&postGame, &preGame, sizeof (struct gameState));
+    assert(memcmp(&postGame, &preGame, sizeof (struct gameState)) == 0);
+
+    // RUN FUNCTION
+    if (DEBUG_FLAG) printGameState(&preGame, 1);
+    result = cardEffect(card, -1, -1, -1, &postGame, handPos, &coin_bonus);
+    // result = playVillage(&postGame, handPos);
+    if (DEBUG_FLAG) printGameState(&postGame, 1);
+
+    // TEST RESULTS
+    // TEST 1
+    test1_string = "cardEffect returned non zero.";
+    if ( result != 0) {
+      if (DEBUG_FLAG) printf("\t%s\n", test1_string);
+      didFail = 1;
+      test=1;
+      errors[0]++;
+      errors[test]++;
     }
-	
-	clock_t start_time; //for tracking run time
-	clock_t end_time; //for tracking run time
-	double actual_time_sec; //for calculating the difference in run time
-	
-	start_time = clock(); //record the start time
-	
-    printf ("TESTING smithy_card():\n");
-	
-	int continueLoop = 1;
-	
-	while(continueLoop == 1)
-	{
-		printf("Performing test # %d.\n", loopCounter);
-	
-		/**********************************************************************************/
-		
-		//An over view of the random generator structure
-		
-		//1. Identify the method under test/ (CUT)
-			//smithy_card()
-			//this card will draw 3 new cards and discard the smithy card
-		
-		//2. Identify all the dependencies (parameters)
-			//reset the game state
-		
-			//values to modify 
-			//int currentPlayer
-			//handCount
-			//numActions
-			
-		//3. Write code to generate random inputs for the chosen method
-			//If the input is a primitive data type, generate a random primitive value, etc.
-			//If the input is an array, create an array and initialize it with some random values, etc.
-			
-			//randomly select which player to check
-			
-			handCount = maxHandCount;
-	
-			//reset the game state
-			memset(&G, 23, sizeof(struct gameState));   // clear the game state
-			r = initializeGame(numPlayer, k, seed, &G); // initialize a new game
-		
-			//select the current player randomly
-			currentPlayer = rand () % 4;
-			printf("currentPlayer == %d.\n", currentPlayer);
-			
-			//initialize the played card count and played cards var, so that the game engine will not fail during testing
-			G.playedCardCount = 0;
-			G.playedCards[0] = 0;
-			
-			//put cards in the player's deck
-			deckCount = rand () % 20;
-			G.deckCount[currentPlayer] = deckCount;
-			tempArrayPosition = 0;
-			for (i = 0; i < (deckCount); i++)
-			{
-				tempArrayPosition = rand () % 10;
-				G.deck[currentPlayer][i] = k[tempArrayPosition]; 
-				printf("deck card # %d == %d.\n", i, G.deck[currentPlayer][i]);
-			}
-			/***/
-			
-			//randomly select starting cards for that player's hand
-			
-			//select a random number of starting cards for the player's hand
-			maxCardsInHand = 3;
-			printf("maxCardsInHand == %d.\n", maxCardsInHand);
-			startingCardCount = rand () % (maxCardsInHand - 1); //random up to 1 less than the hand count, so that we can also add the card being tested
-			startingCardCount = startingCardCount + 1; //increment the card count by 1 for the card being tested
-			printf("startingCardCount == %d.\n", startingCardCount);
-			G.handCount[currentPlayer] = startingCardCount + 1; //start the player with a random number of cards plus the card being tested
-			//draw random cards to fill the player's hand to set up the test
-			tempArrayPosition = 0;
-			for (i = 0; i < (startingCardCount - 1); i++)
-			{
-				tempArrayPosition = rand () % 10;
-				G.hand[currentPlayer][i] = k[tempArrayPosition]; 
-				printf("hand card # %d == %d.\n", i, k[i]);
-			}
-			//add the smithy card as the last card in the hand
-			handPositionCardTesting = i;
-			G.hand[currentPlayer][handPositionCardTesting] = smithy; 
-			printf("card # %d == %d.\n", i, k[i]);
-			i++;
-			
-			/***/
-			
-			//set a random number of actions for the player
-			initActions = rand () % 3; 
-			printf("initActions == %d.\n", initActions);
-			initActions = initActions + 1; //increment by 1 to ensure that there is at least one action to play the card
-			G.numActions = initActions;
-			printf("G.numActions == %d.\n", G.numActions);
-			printf("Player %d's handcount == %d.\n", currentPlayer, G.handCount[currentPlayer]);
-			printf("Player %d's actions == %d.\n", currentPlayer, G.numActions);
-		
-		//4. Invoke the method (execute the method)
-		
-			//test the value
-			printf("Calling the function...\n"); 
-			returnValue = smithy_card(currentPlayer, 0, 0, 0, &G, handPositionCardTesting, 0); //int smithy_card(int currentPlayer, int choice1, int choice2, int choice3, struct gameState *state, int handPos, int *bonus)
-			printf("The return value == %d.\n", returnValue); 
-			
-			//check if the value is what is expected
-			printf("Player %d's handcount == %d.\n", currentPlayer, G.handCount[currentPlayer]);
-			printf("Player %d's actions == %d.\n", currentPlayer, G.numActions);
-			//checking for an error: confirming that the number of cards in hand is correct
-			if(G.handCount[currentPlayer] != (startingCardCount + 2))
-			{
-				printf("Error found! The number of cards in player's hand is not correct.\n");
-				numberOfErrorsFound++;
-			}
-		
-		//5. Check if stopping criterion (like time or number of loops) is not satisfied go to step 2.
-		
-			loopCounter++; //increase the loopCounter;
-			if(loopCounter >= timesToLoop)
-			{
-				printf("Reached the maximum number of tests.\n"); 
-				continueLoop = 0;
-			}
-			
-			end_time = clock();
-			actual_time_sec = (double)(end_time - start_time) / CLOCKS_PER_SEC; //calculate the elapsed time
-			
-			//stop the loop if it exceeds 60 seconds
-			if(actual_time_sec >= 300)
-			{
-				continueLoop = 0;
-			}
-		
-		/**********************************************************************************/
-		
-		
-		
-	}
-	
-    printf("Finished Testing.\nFound %d errors from %d tests.\n", numberOfErrorsFound, timesToLoop);
-	
-	printf("Elapsed time is %f seconds.\n", actual_time_sec);
-	
-    return 0;
+
+    // Check that game state changed (result = 0 when same game state)
+    // TEST 2
+    test2_string = "Expected different game state.";
+    result = compareGameState(&preGame, &postGame);
+    if ( result == 0) {
+      if (DEBUG_FLAG) printf("\t%s\n", test2_string);
+      didFail = 1;
+      test=2;
+      errors[0]++;
+      errors[test]++;
+    }
+
+    // Check that new discardCount is zero
+    // TEST 3
+    test3_string = "Expected post discard count to be zero.";
+    result = ( postGame.discardCount[p] == 0 );
+    if ( result == 0) {
+      if (DEBUG_FLAG) printf("\t%s\n", test3_string);
+      didFail = 1;
+      test=3;
+      errors[0]++;
+      errors[test]++;
+    }
+
+    // Check that deckCount is equal to the old discardCount -1
+    // TEST 4
+    test4_string = "Expected pre discard count to be 1 more than post deck count.";
+    result = ( preGame.discardCount[p] - 1 == postGame.deckCount[p] );
+    if ( result == 0) {
+      if (DEBUG_FLAG) printf("\t%s\n", test4_string);
+      didFail = 1;
+      test=4;
+      errors[0]++;
+      errors[test]++;
+    }
+
+    // Check that the hand count is same (gain 1 lose 1)
+    // TEST 5
+    test5_string = "Expected hand count to be equal.";
+    result = ( preGame.handCount[p] == postGame.handCount[p] );
+    if ( result == 0) {
+      if (DEBUG_FLAG) printf("\t%s\n", test5_string);
+      didFail = 1;
+      test=5;
+      errors[0]++;
+      errors[test]++;
+    }
+
+    // Check that the played card count is 1 more
+    // TEST 6
+    test6_string = "Expected post played count to be 1 more.";
+    result = ( preGame.playedCardCount + 1 == postGame.playedCardCount );
+    if ( result == 0) {
+      if (DEBUG_FLAG) printf("\t%s\n", test6_string);
+      didFail = 1;
+      test=6;
+      errors[0]++;
+      errors[test]++;
+    }
+
+    // Card goes into played pile
+    // TEST 7
+    test7_string = "Expected last played card to be right card.";
+    result = ( postGame.playedCards[postGame.playedCardCount - 1] == card );
+    if ( result == 0) {
+      if (DEBUG_FLAG) printf("\t%s\n", test7_string);
+      didFail = 1;
+      test=7;
+      errors[0]++;
+      errors[test]++;
+    }
+
+    // Action Count increases by 2
+    // TEST 8
+    test8_string = "Expected numActions to be 2 more.";
+    result = ( preGame.numActions + 2 == postGame.numActions );
+    if ( result == 0) {
+      if (DEBUG_FLAG) printf("\t%s\n", test8_string);
+      didFail = 1;
+      test=8;
+      errors[0]++;
+      errors[test]++;
+    }
+
+    //
+    // Set PreGrame to Equal PostGame.
+    //
+
+    // Remove Card from hand, put in played pile
+    preGame.playedCards[ preGame.playedCardCount ] = preGame.hand[p][ handPos ];
+    preGame.playedCardCount++;
+
+    // Copy Hand From PostGame (Don't know next drawn card)
+    preGame.handCount[p] = 0;
+    for (i = 0; i < postGame.handCount[p]; i++) {
+      preGame.hand[p][i] = postGame.hand[p][i];
+      preGame.handCount[p]++;
+    }
+    for (i = preGame.handCount[p]; i < MAX_DECK; i++) {
+      // Ensure remaining slots in preGame are equal to -1
+      preGame.hand[p][i] = -1;
+    }
+
+    // Copy Deck From PostGame (Don't know next drawn card)
+    preGame.deckCount[p] = 0;
+    for (i = 0 ; i < postGame.deckCount[p]; i++) {
+      preGame.deck[p][i] = postGame.deck[p][i];
+      preGame.deckCount[p]++;
+    }
+    for (i = preGame.deckCount[p]; i < MAX_DECK; i++) {
+      // Ensure remaining slots in preGame are equal to -1
+      preGame.deck[p][i] = -1;
+    }
+
+    // Set Discard Pile to -1
+    for (i = 0 ; i < MAX_DECK; i++) {
+      preGame.discard[p][i] = -1;
+    }
+    preGame.discardCount[p] = 0;
+
+    // Action Count increases by 2
+    preGame.numActions += 2;
+
+    // if (DEBUG_FLAG) printGameState(&preGame, 0);
+
+    // Check that game state is now same (result = 0 when same game state)
+    // TEST 9
+    test9_string = "Expected to pass game state adjustments.";
+    result = compareGameState(&preGame, &postGame);
+    if ( result != 0) {
+      if (DEBUG_FLAG) printf("\t%s\n", test9_string);
+      didFail = 1;
+      test=9;
+      errors[0]++;
+      errors[test]++;
+    }
+
+    // Report results
+    if (didFail == 1) {
+      if (DEBUG_FLAG) printf("\tIteration #%d\t FAIL \n\n", z);
+      totalFail++;
+    }
+    else {
+      if (DEBUG_FLAG) printf("\tIteration #%d\t PASS \n\n", z);
+      totalPass++;
+    }
+    if (totalFail >= FAIL_MAX ) {
+      printf("\t***Max Iteration Failures Reached (max=%d)***\n", totalFail);
+      break;
+    }
+  }
+
+  printf("\tFailed %d\t Total Pass %d\t\n", totalFail, totalPass);
+
+  if (errors[1]>0)
+    printf("\tTest #%d Failed %d times: %s\n", 1, errors[1], test1_string);
+  if (errors[2]>0)
+    printf("\tTest #%d Failed %d times: %s\n", 2, errors[2], test2_string);
+  if (errors[3]>0)
+    printf("\tTest #%d Failed %d times: %s\n", 3, errors[3], test3_string);
+  if (errors[4]>0)
+    printf("\tTest #%d Failed %d times: %s\n", 4, errors[4], test4_string);
+  if (errors[5]>0)
+    printf("\tTest #%d Failed %d times: %s\n", 5, errors[5], test5_string);
+  if (errors[6]>0)
+    printf("\tTest #%d Failed %d times: %s\n", 6, errors[6], test6_string);
+  if (errors[7]>0)
+    printf("\tTest #%d Failed %d times: %s\n", 7, errors[7], test7_string);
+  if (errors[8]>0)
+    printf("\tTest #%d Failed %d times: %s\n", 8, errors[8], test8_string);
+  if (errors[9]>0)
+    printf("\tTest #%d Failed %d times: %s\n", 9, errors[9], test9_string);
+  if (errors[0]>0)
+    printf("\t\tTotal Errors: %d\n", errors[0]);
+
+  return 0;
+}
+
+// Case B: Deck is Empty, Discard Empty. No Shuffling possible.
+// Result: Player gains 0 cards so hand decreases by 1
+//         Deck+Discard count still is zero
+//         village card goes to played pile
+//         Action Count increases by 2
+int testVillageCaseB(int iterations) {
+  struct gameState preGame;
+  struct gameState postGame;
+  int deckSize;
+  int discardSize ;
+  int handSize;
+  int i;
+  int z; // iteration count
+  int v1, v2;
+  int result = -1;
+  int card;
+  int handPos = -1;
+  int p = -1;
+  int coin_bonus = 0;
+  int didFail = 0;    // 0 for pass, 1 for fail
+  int totalPass = 0;
+  int totalFail = 0;
+  int errors[10] = {0, 0, 0, 0, 0, 0, 0, 0, 0};  // index 0 for total errors
+  char * test1_string;
+  char * test2_string;
+  char * test3_string;
+  char * test4_string;
+  char * test5_string;
+  char * test6_string;
+  char * test7_string;
+  char * test8_string;
+  char * test9_string;
+
+  for (z = 0; z < iterations; z++ ) {
+    // SETUP
+    int test=0;
+    i = 0;
+    v1 = 0;
+    v2 = 0;
+    result = -1;
+    card = village;
+    handPos = -1;
+    p = -1;
+    coin_bonus = 0;
+    didFail = 0;    // 0 for pass, 1 for fail
+
+    deckSize = 0;
+    discardSize = 0;
+    handSize = 10;
+    if (DEBUG_FLAG) printf("\tsetGameState #%d\n", z);
+    setGameState(&preGame, deckSize, discardSize, handSize );
+
+    // Set player
+    p = floor (Random() * preGame.numPlayers);
+    preGame.whoseTurn = p;
+    assert(preGame.discardCount[p] == discardSize);
+    assert(preGame.handCount[p] == handSize);
+    assert(preGame.deckCount[p] == deckSize);
+
+    // Set Action Count to > 0
+    preGame.numActions = 1;
+
+    // Set Played card count
+    // preGame.playedCardCount = 1;
+    // for (i = 0 ; i < preGame.playedCardCount; i++) {
+    //   preGame.playedCards[i] = mine;    // ineffective card in played card
+    // }
+
+    // Set card hand position
+    handPos = floor(Random() * handSize);
+    preGame.hand[p][handPos] = card;
+
+    // Copy Game State for Post
+    memcpy(&postGame, &preGame, sizeof (struct gameState));
+    assert(memcmp(&postGame, &preGame, sizeof (struct gameState)) == 0);
+
+    // RUN FUNCTION
+    if (DEBUG_FLAG) printGameState(&preGame, 1);
+    result = cardEffect(card, -1, -1, -1, &postGame, handPos, &coin_bonus);
+    // result = playVillage(&postGame, handPos);
+    if (DEBUG_FLAG) printGameState(&postGame, 1);
+
+    // TEST RESULTS
+    // TEST 1
+    test1_string = "cardEffect returned non zero.";
+    if ( result != 0) {
+      if (DEBUG_FLAG) printf("\t%s\n", test1_string);
+      didFail = 1;
+      test=1;
+      errors[0]++;
+      errors[test]++;
+    }
+
+    // Check that game state changed (result = 0 when same game state)
+    // TEST 2
+    test2_string = "Expected different game state.";
+    result = compareGameState(&preGame, &postGame);
+    if ( result == 0) {
+      if (DEBUG_FLAG) printf("\t%s\n", test2_string);
+      didFail = 1;
+      test=2;
+      errors[0]++;
+      errors[test]++;
+    }
+
+    // Check that post discardCount is zero
+    // TEST 3
+    test3_string = "Expected post discard count to be zero.";
+    result = ( postGame.discardCount[p] == 0 );
+    if ( result == 0) {
+      if (DEBUG_FLAG) printf("\t%s\n", test3_string);
+      didFail = 1;
+      test=3;
+      errors[0]++;
+      errors[test]++;
+    }
+
+    // Check that post deckCount is equal to 0
+    // TEST 4
+    test4_string = "Expected post deck count to be zero.";
+    result = ( postGame.discardCount[p] == 0 );
+    if ( result == 0) {
+      if (DEBUG_FLAG) printf("\t%s\n", test4_string);
+      didFail = 1;
+      test=4;
+      errors[0]++;
+      errors[test]++;
+    }
+
+    // Check that the hand count is decreased by 1 (gain 0 lose 1)
+    // TEST 5
+    test5_string = "Expected hand count to be 1 less.";
+    result = ( preGame.handCount[p] - 1 == postGame.handCount[p] );
+    if ( result == 0) {
+      if (DEBUG_FLAG) printf("\t%s\n", test5_string);
+      didFail = 1;
+      test=5;
+      errors[0]++;
+      errors[test]++;
+    }
+
+    // Check that the played card count is 1 more
+    // TEST 6
+    test6_string = "Expected post played count to be 1 more.";
+    result = ( preGame.playedCardCount + 1 == postGame.playedCardCount );
+    if ( result == 0) {
+      if (DEBUG_FLAG) printf("\t%s\n", test6_string);
+      didFail = 1;
+      test=6;
+      errors[0]++;
+      errors[test]++;
+    }
+
+    // Card goes into played pile
+    // TEST 7
+    test7_string = "Expected last played card to be right card.";
+    result = ( postGame.playedCards[postGame.playedCardCount - 1] == card );
+    if ( result == 0) {
+      if (DEBUG_FLAG) printf("\t%s\n", test7_string);
+      didFail = 1;
+      test=7;
+      errors[0]++;
+      errors[test]++;
+    }
+
+    // Action Count increases by 2
+    // TEST 8
+    test8_string = "Expected numActions to be 2 more.";
+    result = ( preGame.numActions + 2 == postGame.numActions );
+    if ( result == 0) {
+      if (DEBUG_FLAG) printf("\t%s\n", test8_string);
+      didFail = 1;
+      test=8;
+      errors[0]++;
+      errors[test]++;
+    }
+
+    //
+    // Set PreGrame to Equal PostGame.
+    //
+
+    // Remove Card from hand, put in played pile
+    preGame.playedCards[ preGame.playedCardCount ] = preGame.hand[p][ handPos ];
+    preGame.playedCardCount++;
+
+    // Copy Hand From PostGame ( same cards minus played card )
+    preGame.handCount[p] = 0;
+    for (i = 0; i < postGame.handCount[p]; i++) {
+      preGame.hand[p][i] = postGame.hand[p][i];
+      preGame.handCount[p]++;
+    }
+    for (i = preGame.handCount[p]; i < MAX_DECK; i++) {
+      // Ensure remaining slots in preGame are equal to -1
+      preGame.hand[p][i] = -1;
+    }
+
+    // Set Deck Pile to -1 (still empty)
+    for (i = 0 ; i < MAX_DECK; i++) {
+      preGame.deck[p][i] = -1;
+    }
+    preGame.deckCount[p] = 0;
+
+    // Set Discard Pile to -1 (still empty)
+    for (i = 0 ; i < MAX_DECK; i++) {
+      preGame.discard[p][i] = -1;
+    }
+    preGame.discardCount[p] = 0;
+
+    // Action Count increases by 2
+    preGame.numActions += 2;
+
+    // if (DEBUG_FLAG) printGameState(&preGame, 0);
+
+    // Check that game state is now same (result = 0 when same game state)
+    // TEST 9
+    test9_string = "Expected to pass game state adjustments.";
+    result = compareGameState(&preGame, &postGame);
+    if ( result != 0) {
+      if (DEBUG_FLAG) printf("\t%s\n", test9_string);
+      didFail = 1;
+      test=9;
+      errors[0]++;
+      errors[test]++;
+    }
+
+    // Report results
+    if (didFail == 1) {
+      if (DEBUG_FLAG) printf("\tIteration #%d\t FAIL \n\n", z);
+      totalFail++;
+    }
+    else {
+      if (DEBUG_FLAG) printf("\tIteration #%d\t PASS \n\n", z);
+      totalPass++;
+    }
+    if (totalFail >= FAIL_MAX ) {
+      printf("\t***Max Iteration Failures Reached (max=%d)***\n", totalFail);
+      break;
+    }
+  }
+
+  printf("\tFailed %d\t Total Pass %d\t\n", totalFail, totalPass);
+
+  if (errors[1]>0)
+    printf("\tTest #%d Failed %d times: %s\n", 1, errors[1], test1_string);
+  if (errors[2]>0)
+    printf("\tTest #%d Failed %d times: %s\n", 2, errors[2], test2_string);
+  if (errors[3]>0)
+    printf("\tTest #%d Failed %d times: %s\n", 3, errors[3], test3_string);
+  if (errors[4]>0)
+    printf("\tTest #%d Failed %d times: %s\n", 4, errors[4], test4_string);
+  if (errors[5]>0)
+    printf("\tTest #%d Failed %d times: %s\n", 5, errors[5], test5_string);
+  if (errors[6]>0)
+    printf("\tTest #%d Failed %d times: %s\n", 6, errors[6], test6_string);
+  if (errors[7]>0)
+    printf("\tTest #%d Failed %d times: %s\n", 7, errors[7], test7_string);
+  if (errors[8]>0)
+    printf("\tTest #%d Failed %d times: %s\n", 8, errors[8], test8_string);
+  if (errors[9]>0)
+    printf("\tTest #%d Failed %d times: %s\n", 9, errors[9], test9_string);
+  if (errors[0]>0)
+    printf("\t\tTotal Errors: %d\n", errors[0]);
+
+  return 0;
+}
+
+// Case C: Deck has 1 or more cards (No shuffling required)
+// Result: Player gains 1 cards so hand stays same 1
+//         Deck count is 1 less
+//         Discard count unchanged
+//         village card goes to played pile
+//         Action Count increases by 2
+int testVillageCaseC(int iterations) {
+  struct gameState preGame;
+  struct gameState postGame;
+  int deckSize;
+  int discardSize ;
+  int handSize;
+  int i;
+  int z; // iteration count
+  int v1, v2;
+  int result = -1;
+  int card;
+  int handPos = -1;
+  int p = -1;
+  int coin_bonus = 0;
+  int didFail = 0;    // 0 for pass, 1 for fail
+  int totalPass = 0;
+  int totalFail = 0;
+  int errors[10] = {0, 0, 0, 0, 0, 0, 0, 0, 0};  // index 0 for total errors
+  char * test1_string;
+  char * test2_string;
+  char * test3_string;
+  char * test4_string;
+  char * test5_string;
+  char * test6_string;
+  char * test7_string;
+  char * test8_string;
+  char * test9_string;
+
+  for (z = 0; z < iterations; z++ ) {
+    // SETUP
+    int test=0;
+    i = 0;
+    v1 = 0;
+    v2 = 0;
+    result = -1;
+    card = village;
+    handPos = -1;
+    p = -1;
+    coin_bonus = 0;
+    didFail = 0;    // 0 for pass, 1 for fail
+
+    do {
+      deckSize = ceil( Random() * MAX_DECK ); // greater than 0
+    } while (( deckSize < 1) || (deckSize > MAX_DECK ));
+    do {
+      discardSize = ceil( Random() * MAX_DECK ); // greater than 0
+    } while (( discardSize < 1) || (discardSize > MAX_DECK ));
+    handSize = 10;
+    if (DEBUG_FLAG) printf("\tsetGameState #%d\n", z);
+    setGameState(&preGame, deckSize, discardSize, handSize );
+
+    // Set player
+    p = floor (Random() * preGame.numPlayers);
+    preGame.whoseTurn = p;
+    assert(preGame.discardCount[p] == discardSize);
+    assert(preGame.handCount[p] == handSize);
+    assert(preGame.deckCount[p] == deckSize);
+
+    // Set Action Count to > 0
+    preGame.numActions = 1;
+
+    // Set Played card count
+    // preGame.playedCardCount = 1;
+    // for (i = 0 ; i < preGame.playedCardCount; i++) {
+    //   preGame.playedCards[i] = mine;    // ineffective card in played card
+    // }
+
+    // Set card hand position
+    handPos = floor(Random() * handSize);
+    preGame.hand[p][handPos] = card;
+
+    // Copy Game State for Post
+    memcpy(&postGame, &preGame, sizeof (struct gameState));
+    assert(memcmp(&postGame, &preGame, sizeof (struct gameState)) == 0);
+
+    // RUN FUNCTION
+    // if (DEBUG_FLAG) printGameState(&preGame, 1);
+    result = cardEffect(card, -1, -1, -1, &postGame, handPos, &coin_bonus);
+    // result = playVillage(&postGame, handPos);
+    // if (DEBUG_FLAG) printGameState(&postGame, 1);
+
+    // TEST RESULTS
+    // TEST 1
+    test1_string = "cardEffect returned non zero.";
+    if ( result != 0) {
+      if (DEBUG_FLAG) printf("\t%s\n", test1_string);
+      didFail = 1;
+      test=1;
+      errors[0]++;
+      errors[test]++;
+    }
+
+    // Check that game state changed (result = 0 when same game state)
+    // TEST 2
+    test2_string = "Expected different game state.";
+    result = compareGameState(&preGame, &postGame);
+    if ( result == 0) {
+      if (DEBUG_FLAG) printf("\t%s\n", test2_string);
+      didFail = 1;
+      test=2;
+      errors[0]++;
+      errors[test]++;
+    }
+
+    // Check that discardCount is same
+    // TEST 3
+    test3_string = "Expected discard count to be same.";
+    result = ( preGame.discardCount[p] == postGame.discardCount[p] );
+    if ( result == 0) {
+      if (DEBUG_FLAG) printf("\t%s\n", test3_string);
+      didFail = 1;
+      test=3;
+      errors[0]++;
+      errors[test]++;
+    }
+
+    // Check that deckCount is equal to the old deckCount -1
+    // TEST 4
+    test4_string = "Expected deck count to be 1 less.";
+    result = ( preGame.deckCount[p] - 1 == postGame.deckCount[p] );
+    if ( result == 0) {
+      if (DEBUG_FLAG) printf("\t%s\n", test4_string);
+      didFail = 1;
+      test=4;
+      errors[0]++;
+      errors[test]++;
+    }
+
+    // Check that the hand count is same (gain 1 lose 1)
+    // TEST 5
+    test5_string = "Expected hand count to be equal.";
+    result = ( preGame.handCount[p] == postGame.handCount[p] );
+    if ( result == 0) {
+      if (DEBUG_FLAG) printf("\t%s\n", test5_string);
+      didFail = 1;
+      test=5;
+      errors[0]++;
+      errors[test]++;
+    }
+
+    // Check that the played card count is 1 more
+    // TEST 6
+    test6_string = "Expected post played count to be 1 more.";
+    result = ( preGame.playedCardCount + 1 == postGame.playedCardCount );
+    if ( result == 0) {
+      if (DEBUG_FLAG) printf("\t%s\n", test6_string);
+      didFail = 1;
+      test=6;
+      errors[0]++;
+      errors[test]++;
+    }
+
+    // Card goes into played pile
+    // TEST 7
+    test7_string = "Expected last played card to be right card.";
+    result = ( postGame.playedCards[postGame.playedCardCount - 1] == card );
+    if ( result == 0) {
+      if (DEBUG_FLAG) printf("\t%s\n", test7_string);
+      didFail = 1;
+      test=7;
+      errors[0]++;
+      errors[test]++;
+    }
+
+    // Action Count increases by 2
+    // TEST 8
+    test8_string = "Expected numActions to be 2 more.";
+    result = ( preGame.numActions + 2 == postGame.numActions );
+    if ( result == 0) {
+      if (DEBUG_FLAG) printf("\t%s\n", test8_string);
+      didFail = 1;
+      test=8;
+      errors[0]++;
+      errors[test]++;
+    }
+
+    //
+    // Set PreGrame to Equal PostGame.
+    //
+
+    // Remove Card from hand, put in played pile
+    preGame.playedCards[ preGame.playedCardCount ] = preGame.hand[p][ handPos ];
+    preGame.playedCardCount++;
+
+    // Copy Hand From PostGame (Don't know next drawn card)
+    preGame.handCount[p] = 0;
+    for (i = 0; i < postGame.handCount[p]; i++) {
+      preGame.hand[p][i] = postGame.hand[p][i];
+      preGame.handCount[p]++;
+    }
+    for (i = preGame.handCount[p]; i < MAX_DECK; i++) {
+      // Ensure remaining slots in preGame are equal to -1
+      preGame.hand[p][i] = -1;
+    }
+
+    // Copy Deck From PostGame (Don't know next drawn card)
+    preGame.deckCount[p] = 0;
+    for (i = 0 ; i < postGame.deckCount[p]; i++) {
+      preGame.deck[p][i] = postGame.deck[p][i];
+      preGame.deckCount[p]++;
+    }
+    for (i = preGame.deckCount[p]; i < MAX_DECK; i++) {
+      // Ensure remaining slots in preGame are equal to -1
+      preGame.deck[p][i] = -1;
+    }
+
+    // Discard Pile should be unchanged
+
+    // Action Count increases by 2
+    preGame.numActions += 2;
+
+    // if (DEBUG_FLAG) printGameState(&preGame, 0);
+
+    // Check that game state is now same (result = 0 when same game state)
+    // TEST 9
+    test9_string = "Expected to pass game state adjustments.";
+    result = compareGameState(&preGame, &postGame);
+    if ( result != 0) {
+      if (DEBUG_FLAG) printf("\n\n\n");
+      if (DEBUG_FLAG) printf("\t%s (# %d)\n", test9_string, result);
+      if (DEBUG_FLAG) printGameState(&preGame, 1);
+      if (DEBUG_FLAG) printf("\n");
+      if (DEBUG_FLAG) printGameState(&postGame, 1);
+      if (DEBUG_FLAG) printf("\n\n\n");
+      didFail = 1;
+      test=9;
+      errors[0]++;
+      errors[test]++;
+    }
+
+    // Report results
+    if (didFail == 1) {
+      if (DEBUG_FLAG) printf("\tIteration #%d\t FAIL \n\n", z);
+      totalFail++;
+    }
+    else {
+      if (DEBUG_FLAG) printf("\tIteration #%d\t PASS \n\n", z);
+      totalPass++;
+    }
+    if (totalFail >= FAIL_MAX ) {
+      printf("\t***Max Iteration Failures Reached (max=%d)***\n", totalFail);
+      break;
+    }
+  }
+
+  printf("\tFailed %d\t Total Pass %d\t\n", totalFail, totalPass);
+
+  if (errors[1]>0)
+    printf("\tTest #%d Failed %d times: %s\n", 1, errors[1], test1_string);
+  if (errors[2]>0)
+    printf("\tTest #%d Failed %d times: %s\n", 2, errors[2], test2_string);
+  if (errors[3]>0)
+    printf("\tTest #%d Failed %d times: %s\n", 3, errors[3], test3_string);
+  if (errors[4]>0)
+    printf("\tTest #%d Failed %d times: %s\n", 4, errors[4], test4_string);
+  if (errors[5]>0)
+    printf("\tTest #%d Failed %d times: %s\n", 5, errors[5], test5_string);
+  if (errors[6]>0)
+    printf("\tTest #%d Failed %d times: %s\n", 6, errors[6], test6_string);
+  if (errors[7]>0)
+    printf("\tTest #%d Failed %d times: %s\n", 7, errors[7], test7_string);
+  if (errors[8]>0)
+    printf("\tTest #%d Failed %d times: %s\n", 8, errors[8], test8_string);
+  if (errors[9]>0)
+    printf("\tTest #%d Failed %d times: %s\n", 9, errors[9], test9_string);
+  if (errors[0]>0)
+    printf("\t\tTotal Errors: %d\n", errors[0]);
+
+  return 0;
+}
+
+
+
+int testVillage( int iterations ) {
+  // Village
+  // Result: Player gains 0 or 1 cards from its deck
+  //         Hand changes by -1 or 0 (b/c of playing village)
+  //         Deck+Discard count decreases by 0 or 1
+  //         village card goes to played pile
+  //         Action Count increases by 2
+
+  // Cases:
+  //  A - Deck Empty, Requires Shuffling of non-empty discard
+  //  B - Deck Empty, Discard Empty No Shuffling possible.
+  //  C - Deck has 1 or more cards
+
+  printf("\n=============================================================\n\n");
+  printf("Case A: Deck is Empty, Requires Shuffling of non-empty discard.\n");
+  testVillageCaseA(iterations);
+
+  printf("\n=============================================================\n\n");
+  printf("Case B: Deck is Empty, Discard Empty. No Shuffling possible.\n");
+  testVillageCaseB(iterations);
+  printf("\n\n=============================================================\n\n");
+
+  printf("Case C: Deck has 1 or more cards (No shuffling required).\n");
+  testVillageCaseC(iterations);
+  printf("\n\n");
+
+
+  return 0;
+}
+
+int main(int argc, char *argv[]) {
+  int iterations = ITERATIONS;
+  int seed = time(NULL);
+  seed = 140;
+  // srand(seed);
+
+  SelectStream(2);
+  PutSeed(seed);
+
+  char * teststring = "village Card";
+  printf("\n\nTESTING: %s with test seed as %d\n\n\n", teststring, seed);
+  time_t time0 = time(NULL);
+  testVillage( iterations );
+  time_t time1 = time(NULL);
+  printf("\nTIME: %ld sec\n\n\n", (long)(time1-time0));
+
+  return 0;
 }
