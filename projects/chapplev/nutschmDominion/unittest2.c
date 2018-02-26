@@ -26,6 +26,7 @@ OUTPUT Game State with cards in deck and in a different order
 * Return value is zero for valid input, -1 for invalid deckCount
 */
 
+int compare(const void* a, const void* b);
 
 int main(int argc, char *argv[]) {
   // Setup gameStates Variables
