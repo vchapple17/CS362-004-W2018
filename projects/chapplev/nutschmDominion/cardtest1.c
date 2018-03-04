@@ -6,25 +6,10 @@
 #include "dominion_helpers.h"
 #include "myAssert.h"
 
-
 /* Card Test #1 Dominion */
 /*
 
-Test the function:
-
-int playSmithy(struct gameState *state, int handPos);
-*** depends on drawCard() and discard card
-
-INPUT - vary the following
-* game state with various current players (1/2, 2/2, 1/4, 2/4, 3/4, 4/4)
-* handPos of the smithy card
-* small number of cards total (run out of cards to draw)
-        0 discard, 0 deck
-
-OUTPUT
-* Current player has 3 cards added to hand
-* Current player has 3 cards removed from deck
-* Shouldn't there be a play area? no immediately discard
+Test the implementation of Smithy
 */
 
 int main(int argc, char *argv[]) {
@@ -89,7 +74,7 @@ int main(int argc, char *argv[]) {
   }
   memcpy(&gamePost, &gamePre, sizeof(struct gameState)); // Set POST
   expected = 0;    // Accept
-  // result = playSmithy(&gamePost, handPos);
+  // result = (&gamePost, handPos);
   result = cardEffect(card, -1, -1, -1, &gamePost, handPos, &coin_bonus);
   // Sub Tests
   myAssert( (result == expected) , "Return Value", "PASS", "FAIL");
@@ -135,7 +120,7 @@ int main(int argc, char *argv[]) {
   }
   memcpy(&gamePost, &gamePre, sizeof(struct gameState)); // Set POST
   expected = 0;    // Accept
-  // result = playSmithy(&gamePost, handPos);
+  // result = (&gamePost, handPos);
   result = cardEffect(card, -1, -1, -1, &gamePost, handPos, &coin_bonus);
   // Sub Tests
   myAssert( (result == expected) , "Return Value", "PASS", "FAIL");
@@ -182,7 +167,7 @@ int main(int argc, char *argv[]) {
   }
   memcpy(&gamePost, &gamePre, sizeof(struct gameState)); // Set POST
   expected = 0;    // Accept
-  // result = playSmithy(&gamePost, handPos);
+  // result = (&gamePost, handPos);
   result = cardEffect(card, -1, -1, -1, &gamePost, handPos, &coin_bonus);
   // Sub Tests
   myAssert( (result == expected) , "Return Value", "PASS", "FAIL");
@@ -228,7 +213,7 @@ int main(int argc, char *argv[]) {
   }
   memcpy(&gamePost, &gamePre, sizeof(struct gameState)); // Set POST
   expected = 0;    // Accept
-  // result = playSmithy(&gamePost, handPos);
+  // result = (&gamePost, handPos);
   result = cardEffect(card, -1, -1, -1, &gamePost, handPos, &coin_bonus);
   // Sub Tests
   myAssert( (result == expected) , "Return Value", "PASS", "FAIL");
@@ -271,10 +256,10 @@ int main(int argc, char *argv[]) {
   for (i = 0; i < gamePre.playedCardCount; i++ ) {
     gamePre.playedCards[i] = i % (treasure_map+1); // Set discard pile
   }
+
   memcpy(&gamePost, &gamePre, sizeof(struct gameState)); // Set POST
   expected = 0;    // Accept
-  result = playSmithy(&gamePost, handPos);
-  // result = cardEffect(card, -1, -1, -1, &gamePost, handPos, &coin_bonus);
+  result = smithy_card(player, -1, -1, -1, &gamePost, handPos, &coin_bonus);
   // Sub Tests
   myAssert( (result == expected) , "Return Value", "PASS", "FAIL");
   myAssert( (memcmp(&gamePre, &gamePost, sizeof(struct gameState)) != 0), "Different Game State", "PASS", "FAIL");
@@ -319,8 +304,7 @@ int main(int argc, char *argv[]) {
   }
   memcpy(&gamePost, &gamePre, sizeof(struct gameState)); // Set POST
   expected = 0;    // Accept
-  result = playSmithy(&gamePost, handPos);
-  // result = cardEffect(card, -1, -1, -1, &gamePost, handPos, &coin_bonus);
+  result = smithy_card(player, -1, -1, -1, &gamePost, handPos, &coin_bonus);
   // Sub Tests
   myAssert( (result == expected) , "Return Value", "PASS", "FAIL");
   myAssert( (memcmp(&gamePre, &gamePost, sizeof(struct gameState)) != 0), "Different Game State", "PASS", "FAIL");
@@ -366,8 +350,10 @@ int main(int argc, char *argv[]) {
   }
   memcpy(&gamePost, &gamePre, sizeof(struct gameState)); // Set POST
   expected = 0;    // Accept
-  result = playSmithy(&gamePost, handPos);
+  result = (&gamePost, handPos);
   // result = cardEffect(card, -1, -1, -1, &gamePost, handPos, &coin_bonus);
+  result = smithy_card(player, -1, -1, -1, &gamePost, handPos, &coin_bonus);
+
   // Sub Tests
   myAssert( (result == expected) , "Return Value", "PASS", "FAIL");
   myAssert( (memcmp(&gamePre, &gamePost, sizeof(struct gameState)) != 0), "Different Game State", "PASS", "FAIL");
@@ -412,8 +398,8 @@ int main(int argc, char *argv[]) {
   }
   memcpy(&gamePost, &gamePre, sizeof(struct gameState)); // Set POST
   expected = 0;    // Accept
-  result = playSmithy(&gamePost, handPos);
-  // result = cardEffect(card, -1, -1, -1, &gamePost, handPos, &coin_bonus);
+  result = (&gamePost, handPos);
+  result = smithy_card(player, -1, -1, -1, &gamePost, handPos, &coin_bonus);
   // Sub Tests
   myAssert( (result == expected) , "Return Value", "PASS", "FAIL");
   myAssert( (memcmp(&gamePre, &gamePost, sizeof(struct gameState)) != 0), "Different Game State", "PASS", "FAIL");

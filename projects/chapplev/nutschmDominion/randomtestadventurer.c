@@ -106,8 +106,7 @@ int testAdventurerCaseA(int iterations) {
     if (DEBUG_FLAG) printGameState(&preGame, 0);
     // if (DEBUG_FLAG) printf("\tTesting card Effect\n");
     result = cardEffect(card, -1, -1, -1, &postGame, handPos, &coin_bonus);
-    // result = playAdventurer(&postGame);
-
+    
     // TEST RESULTS
     // TEST 1
     test1_string = "CardEffect returned non zero";
@@ -321,7 +320,7 @@ int testAdventurerCaseB(int iterations) {
     if (DEBUG_FLAG) printGameState(&preGame, 0);
     // if (DEBUG_FLAG) printf("\tTesting card Effect\n");
     result = cardEffect(card, -1, -1, -1, &postGame, handPos, &coin_bonus);
-    // result = playAdventurer(&postGame);
+
 
     // TEST RESULTS
     // TEST 1
@@ -1509,7 +1508,7 @@ int testAdventurer( int iterations ) {
   printf("Case A: Testing where no treasure cards exist and ");
   printf("no shuffling occurs.\n");
   printf("*** SKIPPING b/c this test segfaults within the FUT.***\n");
-  // testAdventurerCaseA(iterations);
+  testAdventurerCaseA(iterations);
   printf("\n\n");
 
   printf("Case B: Testing where no treasure cards exist and ");
@@ -1520,27 +1519,27 @@ int testAdventurer( int iterations ) {
 
   printf("Case C: Testing where 1 treasure card is in deck and ");
   printf("no shuffling occurs.\n");
-  testAdventurerCaseC(iterations);
+  // testAdventurerCaseC(iterations);
   printf("\n\n");
 
   printf("Case D: Testing where 1 treasure card is in discard and ");
   printf("shuffling occurs.\n");
-  testAdventurerCaseD(iterations);
+  // testAdventurerCaseD(iterations);
   printf("\n\n");
 
   printf("Case E: Testing where 2 treasure cards are in deck and ");
   printf("no shuffling occurs.\n");
-  testAdventurerCaseE(iterations);
+  // testAdventurerCaseE(iterations);
   printf("\n\n");
 
   printf("Case F: Testing where 0 treasure cards are in deck and\n");
   printf("2 treasure cards are in discard so shuffling occurs.\n");
-  testAdventurerCaseF(iterations);
+  // testAdventurerCaseF(iterations);
   printf("\n\n");
 
   printf("Case G: Testing where 1 treasure card is in deck and\n");
   printf("1 treasure card is in discard so shuffling occurs.\n");
-  testAdventurerCaseG(iterations);
+  // testAdventurerCaseG(iterations);
   printf("\n\n");
 
   return 0;

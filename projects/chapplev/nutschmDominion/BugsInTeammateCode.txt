@@ -1,0 +1,142 @@
+Bug 1: Shuffle Function Accepts Invalid Deck Count
+Class: 	Minor Bug
+Date:	Feb 28, 2018
+Reported By:   Valerie Chapple		Email:   chapplev@oregonstate.edu
+Product:        dominion.c              		Version:	Winter 2018
+Platform:       MacOS                		Version:	Sierra High
+
+Is it reproducible: YES
+
+Description
+Shuffle Function accepts a deck count that is above the maximum deck size. No error is produced.
+
+Steps to Produce/Reproduce
+Set the deckCount of a player, equal to MAX_DECK+1.
+Run Shuffle Function with the correct player's index and game state.
+
+Expected Results
+Expected the shuffle function to return -1 for an error.
+
+Actual Results
+Shuffle function to returned 0. Game state was unchanged.
+
+Workarounds
+Within the shuffle function check that the deckCount of the given player is less than the MAX_DECK count, returning -1 if not.
+if (state->deckCount[player] > MAX_DECK)
+    return -1; 
+
+
+===============================================================================
+Bug 2: gainCard Function accepts invalid flag
+Class: 	Minor
+Date:	Feb 28, 2018
+Reported By:   Valerie Chapple		Email:   chapplev@oregonstate.edu
+Product:        dominion.c              		Version:	Winter 2018
+Platform:       MacOS                		Version:	Sierra High
+
+Is it reproducible:  YES
+
+Description
+gainCard function is documented to accept 3 options for the toFlag parameter but incorrectly processes more.
+"	If the toFlag parameter is equal to 0, then the card is to be discarded.
+"	If the toFlag parameter is equal to 1, then the card is to be added to the deck.
+"	If the toFlag parameter is equal to 2, then the card is to be added to the hand.
+
+Steps to Produce/Reproduce
+Give the supplyPosition variable a valid integer value, say 1. (supplyPos = 1;)
+Set the supplyCount at that position equal to 1 or more. ( state.supplyCount[supplyPos] = 1;)
+Se the flag parameter to a number other than 0, 1, or 2. (toFlag = 3)
+Call gainCard with that supplyPosition, state, toFlag, and a valid player index
+
+Expected Results
+Expected that gainCard would return a -1 for an invalid flag and the game state to be the same.
+
+Actual Results
+The gainCard function returned 0. The game state changed as though the card to be gained was added to the discard pile of the player.
+
+Workarounds
+Within the gainCard function, there is a if-else block testing the value of toFlag, starting at line 1367. Change the last else statement to an else if statement to check that the toFlag equals zero and continue with discarding the gained card. Then add an else statement at the end of this block of logic to return -1 for all other values.
+
+if (toFlag == 1) {
+      state->deck[ player ][ state->deckCount[player] ] = supplyPos;
+      state->deckCount[player]++;
+}
+else if (toFlag == 2) {
+      state->hand[ player ][ state->handCount[player] ] = supplyPos;
+      state->handCount[player]++;
+}
+else if (toFlag == 0) {
+      state->discard[player][ state->discardCount[player] ] = supplyPos;
+      state->discardCount[player]++;
+}
+else {
+      return -1;
+}
+
+===============================================================================
+Bug 3: Smithy Card Hand and Deck Count errors
+Class: 	Severe Bug
+Date:	Feb 28, 2018
+Reported By:   Valerie Chapple		Email:   chapplev@oregonstate.edu
+Product:        dominion.c              		Version:	Winter 2018
+Platform:       MacOS                		Version:	Sierra High
+
+Is it reproducible:  YES
+
+Description
+Smithy card consistently reports incorrect hand count and deck count after being played. Results are the same, whether the cardEffect function is called or the smithy_card() function is called. Any gamestate that the player has a deckCount greater than 0 and discardCount greater than 0 will produce incorrect hand count and deck count after the card is played. Only when the player has no cards in the deck and no cards in the discard pile (aka no cards to draw at all), then the function works properly.
+
+Steps to Produce/Reproduce
+Initialize a gamestate.
+Set the player's discardCount equal to non-zero, such as 10, and initialize discard piles to valid cards.
+Set the player's deckCount equal to non-zero, such as 10, and initialize discard piles to valid cards.
+Call cardEffect (or smithy_card) with valid parameters.
+(Other variations can be used to force shuffling or not and control if the player has enough cards to draw.)
+
+Expected Results
+Expect the function to return zero and have a different game state.
+Expect the Hand Count to increase by 2 (draw 3 but played 1)
+Expect the Deck Count decrease by 3 (no shuffling required, deck count decreases by 3)
+Expect the Played Card Count to increase by 1
+Expect the Coin Bonus to be the same.
+
+Actual Results
+Return value was 0 as expected.
+Game changed was changed as expected.
+Hand Count failed to increase by 2.
+Deck Count failed to decrease by 3.
+Played Card Count did increase by 1 as expected.
+
+Workarounds
+One potential fix is the for loop within the smithy_card function draws 4 cards, not 3. However, that fix may not address the incorrect counts. If it does not, further investigation is needed within smithy_card and its dependencies (drawCard and discardCard functions).
+
+===============================================================================
+Bug 4: Adventurer Card Segmentation Faults
+Class: 	Severe Bug
+Date:	Feb 28, 2018
+Reported By:   Valerie Chapple		Email:   chapplev@oregonstate.edu
+Product:        dominion.c              		Version:	Winter 2018
+Platform:       MacOS                		Version:	Sierra High
+
+Is it reproducible:  YES
+
+Description
+adventurer_card() function assumes that a card has been successfully drawn from drawCard(). So, when the function examines the last a card in the hand, it is not examining a new drawn card; it is examining a card previously in the hand. This situation causes the hand count to decrease to beyond empty, which causes the program to access out of bound memory.   Not all calls to adventurer will cause segmentation faults.  Calls that avoid segmentation faults will mostly likely return the incorrect card pile counts.
+
+Steps to Produce/Reproduce
+While many scenarios will reproduce the error, one quick way is to test where there are no treasure cards in any of the piles (deck, hand, and discard).  Such as, deckCount and discardCount equal to zero and handCount equal to 1 and includes the adventurer card only.
+
+Expected Results
+CardEffect returns non-zero.
+Expect different game state.
+Expect post deck count to be zero.
+Expect post discard count to equal pre-deck count.
+Expect discard and deck count to be equal.
+Expect post hand count to be 1 less.
+Expect post played count to be 1 more.
+
+Actual Results
+Segmentation Fault
+
+Workarounds
+None.
