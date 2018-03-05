@@ -193,6 +193,9 @@ int shuffle(int player, struct gameState *state) {
 
   if (state->deckCount[player] < 1)
     return -1;
+  if (state->deckCount[player] > MAX_DECK)
+    return -1;
+
   qsort ((void*)(state->deck[player]), state->deckCount[player], sizeof(int), compare);
   /* SORT CARDS IN DECK TO ENSURE DETERMINISM! */
 
@@ -657,12 +660,10 @@ int cardEffect(int card, int choice1, int choice2, int choice3, struct gameState
     {
     // Adventerer
     case adventurer:
-      playAdventurer(state);
-      //Adding line below to run tests
-      return 0;
+      return playAdventurer(state, handPos);
 
     case council_room:
-      playCouncilRoom(state, handPos);
+      return playCouncilRoom(state, handPos);
 
     case feast:
       //gain card with cost up to 5
@@ -829,8 +830,7 @@ int cardEffect(int card, int choice1, int choice2, int choice3, struct gameState
       return 0;
 
     case great_hall:
-      playGreatHall(state, handPos);
-      return 0;
+      return playGreatHall(state, handPos);
 
     case minion:
       //+1 action
@@ -1024,7 +1024,7 @@ int cardEffect(int card, int choice1, int choice2, int choice3, struct gameState
       return 0;
 
     case embargo:
-      playEmbargo(state, handPos, choice1);
+      return playEmbargo(state, handPos, choice1);
 
     case outpost:
       //set outpost flag
@@ -1142,20 +1142,23 @@ int gainCard(int supplyPos, struct gameState *state, int toFlag, int player) {
   // toFlag = 2 : add to hand
 
   if (toFlag == 1)
-    {
-      state->deck[ player ][ state->deckCount[player] ] = supplyPos;
-      state->deckCount[player]++;
-    }
+  {
+    state->deck[ player ][ state->deckCount[player] ] = supplyPos;
+    state->deckCount[player]++;
+  }
   else if (toFlag == 2)
-    {
-      state->hand[ player ][ state->handCount[player] ] = supplyPos;
-      state->handCount[player]++;
-    }
-  else
-    {
-      state->discard[player][ state->discardCount[player] ] = supplyPos;
-      state->discardCount[player]++;
-    }
+  {
+    state->hand[ player ][ state->handCount[player] ] = supplyPos;
+    state->handCount[player]++;
+  }
+  else if (toFlag == 0)
+  {
+    state->discard[player][ state->discardCount[player] ] = supplyPos;
+    state->discardCount[player]++;
+  }
+  else {
+    return -1;
+  }
 
   //decrease number in supply pile
   state->supplyCount[supplyPos]--;
@@ -1192,34 +1195,27 @@ int updateCoins(int player, struct gameState *state, int bonus) {
   return 0;
 }
 
-int playAdventurer(struct gameState *state) {
+int playAdventurer(struct gameState *state, int handPos) {
   int currentPlayer = whoseTurn(state);
-
-
   int temphand[MAX_HAND];// moved above the if statement
   int drawntreasure=0;
   int cardDrawn;
   int z = 0;// this is the counter for the temp hand
-
 
   while(drawntreasure<2) {
     if (state->deckCount[currentPlayer] <1){
       //if the deck is empty we need to shuffle discard and add to deck
       shuffle(currentPlayer, state);
     }
-
-    drawCard(currentPlayer, state);
-    // BUG #1 Adding second call to drawCard
-    drawCard(currentPlayer, state);
-    // BUG #1 Adding second call to drawCard
+    int val = drawCard(currentPlayer, state);
+    if ( val == -1) {
+      // drawCard cannot add card to hand because none left
+      break;
+    }
 
     //top card of hand is most recently drawn card.
     cardDrawn = state->hand[currentPlayer][state->handCount[currentPlayer]-1];
-
-    // BUG #2 Mistaking gold for copper; not counting gold as a treasurecard
-    if (cardDrawn == copper || cardDrawn == silver || cardDrawn == copper)
-    // BUG #2 Mistaking gold for copper; not counting gold as a treasurecard
-    //if (cardDrawn == copper || cardDrawn == silver || cardDrawn == gold)
+    if (cardDrawn == copper || cardDrawn == silver || cardDrawn == gold)
       drawntreasure++;
     else{
       temphand[z]=cardDrawn;
@@ -1233,29 +1229,16 @@ int playAdventurer(struct gameState *state) {
     state->discard[currentPlayer][state->discardCount[currentPlayer]++] = temphand[z-1];
     z=z-1;
   }
+
+  discardCard(handPos, currentPlayer, state, 0);
   return 0;
 }
 
 int playSmithy(struct gameState *state, int handPos) {
   int i;
   int currentPlayer = whoseTurn(state);
-
-  // BUG #1 The next player is incorrectly calculated with subtraction instead of addition, which will eventually cause an out of bounds error with arrays.
-
-  int nextPlayer = currentPlayer - 1;
-  // int nextPlayer = currentPlayer + 1;
-
-  // BUG #1 The next player is incorrectly calculated with subtraction instead of addition, which will eventually cause an out of bounds error with arrays.
-
-  if (nextPlayer > (state->numPlayers - 1)){
-    nextPlayer = 0;
-  }
-
   //+3 Cards
-  // BUG #2 Off by 1 error when drawing cards.
-  for (i = 0; i <= 3; i++) {
-  // for (i = 0; i < 3; i++) {
-  // BUG #2
+  for (i = 0; i < 3; i++) {
     drawCard(currentPlayer, state);
   }
 
@@ -1309,11 +1292,7 @@ int playEmbargo(struct gameState *state, int handPos, int choice1) {
   state->coins = state->coins + 2;
 
   //see if selected pile is in play
-  // BUG #1 If statement uses an assignment (=) instead of the equality (==).
-  if ( state->supplyCount[choice1] = -1 ) {
-  // if ( state->supplyCount[choice1] == -1 ) {
-  // BUG #1
-
+  if ( state->supplyCount[choice1] == -1 ) {
     return -1;
   }
 

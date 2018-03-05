@@ -360,8 +360,8 @@ int testAdventurerCaseB(int iterations) {
 
     // Check that discard pile is equal to the old deckCount
     // TEST 4
-    test4_string = "Expected post discard count to equal pre deck count.";
-    result = ( postGame.discardCount[p] == preGame.deckCount[p] );
+    test4_string = "Expected post discard count to equal pre deck+discard count.";
+    result = ( postGame.discardCount[p] == preGame.deckCount[p] + preGame.discardCount[p]);
     if ( result == 0) {
       if (DEBUG_FLAG) printf("\t%s\n", test4_string);
       didFail = 1;
@@ -579,8 +579,8 @@ int testAdventurerCaseC(int iterations) {
 
     // Check that discard pile is equal to the old deckCount
     // TEST 4
-    test4_string = "Expected post discard count to equal pre deck count.";
-    result = ( postGame.discardCount[p] == preGame.deckCount[p] );
+    test4_string = "Expected post discard count to equal pre deck+discard count -1.";
+    result = ( postGame.discardCount[p] == preGame.deckCount[p] + preGame.discardCount[p] -1);
     if ( result == 0) {
       if (DEBUG_FLAG) printf("\t%s\n", test4_string);
       didFail = 1;
@@ -1508,14 +1508,14 @@ int testAdventurer( int iterations ) {
 
   printf("Case A: Testing where no treasure cards exist and ");
   printf("no shuffling occurs.\n");
-  printf("*** SKIPPING b/c this test segfaults within the FUT.***\n");
-  // testAdventurerCaseA(iterations);
+  // printf("*** SKIPPING b/c this test segfaults within the FUT.***\n");
+  testAdventurerCaseA(iterations);
   printf("\n\n");
 
   printf("Case B: Testing where no treasure cards exist and ");
   printf("shuffling does occur.\n");
-  printf("*** SKIPPING b/c this test segfaults within the FUT.***\n");
-  // testAdventurerCaseB(iterations);
+  // printf("*** SKIPPING b/c this test segfaults within the FUT.***\n");
+  testAdventurerCaseB(iterations);
   printf("\n\n");
 
   printf("Case C: Testing where 1 treasure card is in deck and ");

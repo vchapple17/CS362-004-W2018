@@ -190,7 +190,7 @@ int main(int argc, char *argv[]) {
     // more cards in hand, but played smithy
   myAssert( (gamePre.handCount[player] == gamePost.handCount[player]) , "Hand Count Same", "PASS", "FAIL");
     // 1 fewer card in deck
-  myAssert( (gamePre.deckCount[player] - 1 == gamePost.deckCount[player]) , "Deck Count decrease by 1", "PASS", "FAIL");
+  myAssert( (gamePre.deckCount[player] + gamePre.discardCount[player] - 1) == gamePost.deckCount[player] , "Deck Count decrease by 1", "PASS", "FAIL");
   // Played Card Count increase by 1
   myAssert( (gamePre.playedCardCount + 1 == gamePost.playedCardCount) , "playedCard count increased by 1", "PASS", "FAIL");
   myAssert( (coin_bonus_pre == coin_bonus) , "Coin bonus same.", "PASS", "FAIL");
@@ -374,7 +374,7 @@ int main(int argc, char *argv[]) {
     // more cards in hand, but played smithy
   myAssert( (gamePre.handCount[player] == gamePost.handCount[player]) , "Hand Count Same", "PASS", "FAIL");
     // 1 fewer card in deck
-  myAssert( (gamePre.deckCount[player] - 1 == gamePost.deckCount[player]) , "Deck Count decrease by 1", "PASS", "FAIL");
+  myAssert( (gamePre.deckCount[player] + gamePre.discardCount[player] - 1) == gamePost.deckCount[player] , "Deck Count decrease by 1", "PASS", "FAIL");
   // Played Card Count increase by 1
   myAssert( (gamePre.playedCardCount + 1 == gamePost.playedCardCount) , "playedCard count increased by 1", "PASS", "FAIL");
   myAssert( (coin_bonus_pre == coin_bonus) , "Coin bonus same.", "PASS", "FAIL");
